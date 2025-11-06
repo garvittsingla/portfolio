@@ -11,7 +11,7 @@ const AnimatedIcon = () => {
             setIsAnimating(true)
             setTimeout(() => {
                 setCurrentIndex((prev) => (prev + 1) % icons.length)
-               
+                setIsAnimating(false)
             }, 300) 
         }, 1500)
 
