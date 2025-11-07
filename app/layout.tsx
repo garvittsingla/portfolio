@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono,Playfair_Display,IBM_Plex_Serif } from "next/font/google";
+import { Geist, Geist_Mono, } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -9,10 +9,6 @@ const geistSans = Geist({
 
 
 
-export const playfair = IBM_Plex_Serif({
-  weight: "400",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -22,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Garvit Singla ",
   description: "Personal blog and portfolio of Garvit Singla",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
