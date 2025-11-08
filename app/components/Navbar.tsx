@@ -68,7 +68,7 @@ const Navbar = () => {
     const {ismobile} = useMobile();
    
   return (
-    <nav className="w-4/5 h-16 mx-auto bg--900 flex flex-col justify-center">
+    <nav className=" w-4/5 h-16 mx-auto bg--900 flex flex-col justify-center">
         <div className={`h-3/4 border-t border-t-1 border-b-1 border-zinc-800 rounded-md bg--500 flex justify-between items-center text-white  sm:px-6 ${IBM.className} font-normal`}>
         <div className=" font-normal flex items-center">
            <span className="hover:underline cursor-pointer">Garvit Singla</span>
