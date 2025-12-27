@@ -5,7 +5,7 @@ import MainPage from "./components/MainPage";
 
 export default function Home() {
  return(
-  <div className="bg-[#181818] h-screen w-full">
+  <div className="bg-black h-screen w-full">
      <Navbar/>
       <MainPage/>
   </div>

@@ -5,7 +5,7 @@ import Image from "next/image";
 export default function Banner() {
   return (
     <section className="w-full flex justify-center py-10">
-      <div className="w-[90%] md:w-[60%] bg-neutral-950/80 rounded-xl overflow-hidden border border-neutral-800 shadow-xl relative">
+      <div className="w-[90%] md:w-[60%] bg-black rounded-xl overflow-hidden border border-neutral-800 shadow-xl relative">
 
         {/* Banner Image */}
         <div className="relative h-[220px] md:h-[300px]">

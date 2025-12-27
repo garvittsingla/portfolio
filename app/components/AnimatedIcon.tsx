@@ -19,7 +19,7 @@ const AnimatedIcon = () => {
     }, [icons.length])
 
     return (
-        <div className='relative w-5 h-5 overflow-hidden bg-zinc-100/20 rounded-lg flex p-[4px] items-center justify-center'>
+        <div className='relative w-7 h-7 overflow-hidden bg-zinc-100/20 rounded-lg flex p-[4px] items-center justify-center'>
             <span
                 className={`absolute text-xs transition-all duration-300 ${
                     isAnimating 
