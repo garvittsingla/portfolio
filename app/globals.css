@@ -50,4 +50,95 @@ body {
   will-change: max-width, padding, background-color, border-color, box-shadow;
 }
 
+/* Floating Notebook Doodles Animations */
+@keyframes doodle-float-slow {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-9px) rotate(1.8deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
 
+@keyframes doodle-float-medium {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-11px) rotate(-2.4deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+@keyframes doodle-tap-wobble {
+  0% {
+    transform: scale(1) rotate(0deg);
+  }
+  20% {
+    transform: scale(0.9) rotate(-10deg);
+  }
+  45% {
+    transform: scale(1.22) rotate(12deg);
+  }
+  70% {
+    transform: scale(0.95) rotate(-5deg);
+  }
+  85% {
+    transform: scale(1.05) rotate(2deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes doodle-sparkle-burst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.4);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(var(--tx, 15px), var(--ty, -15px)) scale(1.3);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--tx, 15px) * 1.5), calc(var(--ty, -15px) - 18px)) scale(0.7);
+  }
+}
+
+.animate-doodle-float-1 {
+  animation: doodle-float-slow 5.4s ease-in-out infinite;
+}
+
+.animate-doodle-float-2 {
+  animation: doodle-float-medium 6.6s ease-in-out infinite 0.8s;
+}
+
+@keyframes doodle-float-drift {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1.4deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.animate-doodle-float-3 {
+  animation: doodle-float-drift 6.1s ease-in-out infinite 0.4s;
+}
+
+.animate-doodle-tap {
+  animation: doodle-tap-wobble 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-doodle-sparkle {
+  animation: doodle-sparkle-burst 0.75s ease-out forwards;
+}

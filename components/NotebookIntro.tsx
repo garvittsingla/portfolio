@@ -396,7 +396,7 @@ export function NotebookIntro() {
 
           {/* LinkedIn doodle */}
           <a
-            href="https://linkedin.com/in/garvitsingla"
+            href="https://linkedin.com/in/garvittsingla"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
@@ -425,7 +425,7 @@ export function NotebookIntro() {
 
           {/* Twitter / X doodle */}
           <a
-            href="https://twitter.com/garvitsingla"
+            href="https://twitter.com/garvitsinglaa"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
@@ -452,7 +452,7 @@ export function NotebookIntro() {
 
           {/* Gmail doodle */}
           <a
-            href="mailto:garvits093@gmail.com"
+            href="mailto:garvitsingla4751@gmail.com"
             className="group relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
               border border-neutral-300/90 dark:border-neutral-700/80
               bg-white/60 dark:bg-neutral-900/50 backdrop-blur-xs
