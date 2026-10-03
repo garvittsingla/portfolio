@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #09090b;
+  --dot-color: rgba(0, 0, 0, 0.12);
+  --dot-size: 1.2px;
+  --dot-spacing: 24px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #09090b;
+  --foreground: #fafafa;
+  --dot-color: rgba(255, 255, 255, 0.14);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-x: hidden;
 }
+
+/* Notebook dot grid pattern */
+.dot-grid-paper {
+  background-color: var(--background);
+  background-image: radial-gradient(circle, var(--dot-color) var(--dot-size), transparent var(--dot-size));
+  background-size: var(--dot-spacing) var(--dot-spacing);
+  background-position: 0 0;
+}
+
+.font-handwriting {
+  font-family: var(--font-handwriting), "Gloria Hallelujah", cursive, sans-serif;
+}
+
+

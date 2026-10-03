@@ -1,0 +1,83 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { ThemeToggleSwitch } from "./ThemeToggleSwitch";
+
+export function FloatingNavbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Trigger floating glassmorphic transition after 24px scroll
+      setIsScrolled(window.scrollY > 24);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <header
+      className={`
+        fixed left-1/2 -translate-x-1/2 z-50 select-none
+        transition-all duration-400 cubic-bezier(0.16, 1, 0.3, 1)
+        ${
+          isScrolled
+            ? "top-3 sm:top-4 w-[90vw] sm:w-auto px-4 sm:px-6 py-2 rounded-full bg-white/75 dark:bg-neutral-900/75 backdrop-blur-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-lg shadow-neutral-950/5 dark:shadow-black/40"
+            : "top-0 w-full max-w-4xl py-4 sm:py-5 px-6 rounded-none bg-transparent border-b border-transparent shadow-none"
+        }
+      `}
+    >
+      <div className="w-full flex items-center justify-between gap-4 sm:gap-8">
+        {/* Navigation Links */}
+        <nav className="flex items-center gap-4 sm:gap-6 text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400">
+          <a
+            href="#intro"
+            className="hover:text-neutral-950 dark:hover:text-white transition-colors"
+          >
+            intro
+          </a>
+          <a
+            href="#workspace"
+            className="hover:text-neutral-950 dark:hover:text-white transition-colors"
+          >
+            workspace
+          </a>
+        </nav>
+
+        {/* Right: GitHub profile & Theme Toggle Switch */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <a
+            href="https://github.com/garvittsingla"
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`
+              flex items-center gap-1.5 rounded-full font-mono text-[11px]
+              border border-neutral-200/80 dark:border-neutral-800/80
+              text-neutral-600 dark:text-neutral-300
+              hover:text-neutral-950 dark:hover:text-white
+              hover:border-neutral-400 dark:hover:border-neutral-600
+              transition-all duration-200
+              ${isScrolled ? "px-2.5 py-1" : "px-3 py-1.5"}
+            `}
+            aria-label="GitHub Profile"
+          >
+            <svg
+              className="w-3.5 h-3.5 fill-current"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+            </svg>
+            <span className="hidden sm:inline">github</span>
+          </a>
+
+          {/* Animated Theme Switch */}
+          <ThemeToggleSwitch size={isScrolled ? "sm" : "md"} />
+        </div>
+      </div>
+    </header>
+  );
+}
