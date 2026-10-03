@@ -13,6 +13,7 @@ export function NotebookIntro() {
   const [isTypingDone, setIsTypingDone] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [isAudioBlocked, setIsAudioBlocked] = useState(false);
   const TARGET_VOLUME = 0.4; // 40% volume as requested
 
   const sketchAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -20,6 +21,8 @@ export function NotebookIntro() {
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const isMutedRef = useRef(false);
+  const hasPlayedAudioRef = useRef(false);
+  const isTypingDoneRef = useRef(false);
 
   // Sync ref with state
   useEffect(() => {
@@ -40,9 +43,20 @@ export function NotebookIntro() {
       sketchAudioRef.current.currentTime = 0;
       sketchAudioRef.current.volume = TARGET_VOLUME;
       sketchAudioRef.current.loop = true;
-      sketchAudioRef.current.play().catch(() => {
-        // Autoplay may be restricted by browser until user gesture
-      });
+
+      const playPromise = sketchAudioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            hasPlayedAudioRef.current = true;
+            setIsAudioBlocked(false);
+          })
+          .catch(() => {
+            // Autoplay may be restricted by browser until user gesture
+            hasPlayedAudioRef.current = false;
+            setIsAudioBlocked(true);
+          });
+      }
     }
   }, []);
 
@@ -98,6 +112,7 @@ export function NotebookIntro() {
 
     setDisplayedText("");
     setIsTypingDone(false);
+    isTypingDoneRef.current = false;
 
     let currentIndex = 0;
 
@@ -120,6 +135,7 @@ export function NotebookIntro() {
           }
           stopPencilSound();
           setIsTypingDone(true);
+          isTypingDoneRef.current = true;
         }
       }, 65);
     }, 150);
@@ -132,24 +148,41 @@ export function NotebookIntro() {
     sketchAudio.volume = TARGET_VOLUME;
     sketchAudioRef.current = sketchAudio;
 
-    // Global unlock listener to satisfy browser autoplay policy on first interaction
-    const unlockAudio = () => {
-      if (sketchAudioRef.current) {
-        sketchAudioRef.current.load();
-      }
-    };
-
-    window.addEventListener("pointerdown", unlockAudio, { once: true });
-    window.addEventListener("scroll", unlockAudio, { once: true });
-    window.addEventListener("keydown", unlockAudio, { once: true });
-
     // Run initial handwriting animation
     runHandwritingAnimation();
 
+    // If browser blocks audio on page load without user gesture,
+    // listen for the very first interaction anywhere on the window to unlock & play!
+    const handleFirstGesture = () => {
+      if (isMutedRef.current) return;
+
+      if (!hasPlayedAudioRef.current) {
+        hasPlayedAudioRef.current = true;
+        setIsAudioBlocked(false);
+
+        if (!isTypingDoneRef.current) {
+          // Still in the middle of typing: start sound immediately
+          if (sketchAudioRef.current) {
+            sketchAudioRef.current.currentTime = 0;
+            sketchAudioRef.current.volume = TARGET_VOLUME;
+            sketchAudioRef.current.loop = true;
+            sketchAudioRef.current.play().catch(() => {});
+          }
+        } else {
+          // Finished typing silently before user interacted: replay with sound!
+          runHandwritingAnimation();
+        }
+      }
+    };
+
+    window.addEventListener("pointerdown", handleFirstGesture, { passive: true });
+    window.addEventListener("touchstart", handleFirstGesture, { passive: true });
+    window.addEventListener("keydown", handleFirstGesture, { passive: true });
+
     return () => {
-      window.removeEventListener("pointerdown", unlockAudio);
-      window.removeEventListener("scroll", unlockAudio);
-      window.removeEventListener("keydown", unlockAudio);
+      window.removeEventListener("pointerdown", handleFirstGesture);
+      window.removeEventListener("touchstart", handleFirstGesture);
+      window.removeEventListener("keydown", handleFirstGesture);
       if (sketchAudioRef.current) {
         sketchAudioRef.current.pause();
       }
@@ -172,10 +205,10 @@ export function NotebookIntro() {
   return (
     <section
       aria-label="Notebook Intro"
-      className="w-full max-w-2xl mx-auto flex flex-row items-center justify-center gap-6 sm:gap-8 px-6 select-none"
+      className="w-full max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 px-4 sm:px-6 select-none"
     >
-      {/* 1. GitHub picture with 2-3px white border - locked in place with zero shift */}
-      <div className="relative shrink-0">
+      {/* 1. GitHub picture with 2-3px white border - shifted a little above on mobile */}
+      <div className="relative shrink-0 mb-1 sm:mb-0">
         {/* Subtle washi tape snippet at top */}
         <div
           className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-20 w-11 h-3
@@ -241,15 +274,15 @@ export function NotebookIntro() {
       </div>
 
       {/* 2. Handwritten text: "hey i am" + distinguished "garvit singla" without typing cursor */}
-      <div className="flex flex-col items-start space-y-1">
+      <div className="flex flex-col items-center sm:items-start space-y-1 text-center sm:text-left w-full max-w-full px-2 sm:px-0">
         <div
           onClick={runHandwritingAnimation}
           title="Click to replay writing & sound"
-          className="relative inline-block rotate-[-1deg] transition-transform duration-300 hover:rotate-0 cursor-pointer"
+          className="relative inline-block rotate-[-1deg] transition-transform duration-300 hover:rotate-0 cursor-pointer max-w-full"
         >
           {/* Pre-allocated invisible layout spacer: prevents any shift */}
           <h1
-            className="invisible font-handwriting text-2xl sm:text-3xl md:text-3.5xl font-normal tracking-wide select-none whitespace-nowrap"
+            className="invisible font-handwriting text-lg xs:text-xl sm:text-3xl md:text-3.5xl font-normal tracking-wide select-none whitespace-nowrap"
             aria-hidden="true"
           >
             <span>{prefix}</span>
@@ -257,7 +290,7 @@ export function NotebookIntro() {
           </h1>
 
           {/* Actual typing text: letters appear directly onto paper with NO computer cursor */}
-          <h1 className="absolute inset-0 font-handwriting text-2xl sm:text-3xl md:text-3.5xl font-normal tracking-wide whitespace-nowrap">
+          <h1 className="absolute inset-0 font-handwriting text-lg xs:text-xl sm:text-3xl md:text-3.5xl font-normal tracking-wide whitespace-nowrap">
             {/* Standard graphite ink for greeting */}
             <span className="text-neutral-800 dark:text-neutral-200 transition-colors duration-400">
               {prefixText}
@@ -279,7 +312,7 @@ export function NotebookIntro() {
 
           {/* Hand-drawn ink underline flourish under full line */}
           <svg
-            className={`w-full h-2.5 mt-0.5 text-neutral-700 dark:text-neutral-300 transition-all duration-500 ${
+            className={`w-full h-2 sm:h-2.5 mt-0.5 text-neutral-700 dark:text-neutral-300 transition-all duration-500 ${
               isTypingDone ? "opacity-85 stroke-dashoffset-0" : "opacity-0"
             }`}
             viewBox="0 0 240 10"
@@ -297,7 +330,7 @@ export function NotebookIntro() {
         </div>
 
         {/* Subtitle / Role with replay option and sound toggle */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center justify-center sm:justify-start gap-2.5 pt-0.5">
           <p
             className={`font-handwriting text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 transition-opacity duration-500 delay-100 rotate-[0.5deg] tracking-wide ${
               isTypingDone ? "opacity-85" : "opacity-0"
@@ -342,24 +375,24 @@ export function NotebookIntro() {
 
         {/* 3-4 lines intro */}
         <div
-          className={`pt-2 max-w-md space-y-1.5 transition-all duration-700 delay-200 ${
+          className={`pt-2 w-full max-w-sm sm:max-w-md space-y-1.5 text-center sm:text-left transition-all duration-700 delay-200 ${
             isTypingDone ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
           }`}
         >
-          <p className="text-xs sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
+          <p className="text-[11.5px] sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
             Software engineer obsessed with low-level systems, C/C++, Rust, and graphics.
           </p>
-          <p className="text-xs sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
+          <p className="text-[11.5px] sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
             Exploring foundational computing from network protocols to memory management.
           </p>
-          <p className="text-xs sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
+          <p className="text-[11.5px] sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
             Building performant tools and understanding computers from the metal up.
           </p>
         </div>
 
         {/* 4. Socials in hand-drawn doodle form */}
         <div
-          className={`pt-3 flex flex-wrap items-center gap-2 sm:gap-2.5 transition-all duration-700 delay-300 ${
+          className={`pt-2.5 sm:pt-3 w-full max-w-sm sm:max-w-md flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2.5 transition-all duration-700 delay-300 ${
             isTypingDone ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
           }`}
         >

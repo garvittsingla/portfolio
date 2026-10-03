@@ -40,6 +40,13 @@ export const metadata: Metadata = {
     siteName: "Garvit Singla Portfolio",
     type: "website",
   },
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    apple: "/apple-icon.png",
+  },
 };
 
 const themeInitScript = `

@@ -9,23 +9,9 @@ import {
 } from "./linedPaperPaths";
 
 export function DotGridBackground() {
-  const { theme, dotConfig, backgroundStyle } = useTheme();
-
-  // Dynamic opacity based on customizer setting
-  // Base subtle line opacity: light mode ~0.35, dark mode ~0.22
-  const baseLineOpacity = theme === "dark" ? 0.22 : 0.35;
-  const lineOpacity = Math.min(
-    0.7,
-    Math.max(0.08, (dotConfig.opacity / 0.12) * baseLineOpacity)
-  );
-
-  // Active dot color for dot-grid fallback
-  const dotColor =
-    theme === "dark"
-      ? `rgba(255, 255, 255, ${dotConfig.opacity})`
-      : `rgba(0, 0, 0, ${dotConfig.opacity})`;
-
-  const paperBg = theme === "dark" ? "#090a0f" : "#fdfbf7";
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const paperBg = isDark ? "#090a0f" : "#fdfbf7";
 
   return (
     <div
@@ -35,39 +21,14 @@ export function DotGridBackground() {
       }}
       aria-hidden="true"
     >
-      {backgroundStyle === "dots" ? (
-        // Dot Grid Pattern
+      {/* 1. Light Mode Default: Hand-Drawn Notebook Lines with 4% transparency */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-500 ease-out ${
+          isDark ? "opacity-0" : "opacity-100"
+        }`}
+      >
         <svg
-          className="w-full h-full opacity-100 transition-opacity duration-300"
-          xmlns="http://www.w3.org/2000/svg"
-          width="100%"
-          height="100%"
-        >
-          <defs>
-            <pattern
-              id="spiral-dot-pattern"
-              width={dotConfig.spacing}
-              height={dotConfig.spacing}
-              patternUnits="userSpaceOnUse"
-              patternContentUnits="userSpaceOnUse"
-            >
-              <circle
-                cx={dotConfig.spacing / 2}
-                cy={dotConfig.spacing / 2}
-                r={dotConfig.size / 2}
-                fill={dotColor}
-                style={{
-                  transition: "fill 0.4s ease-out, r 0.3s ease-out",
-                }}
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#spiral-dot-pattern)" />
-        </svg>
-      ) : (
-        // Hand-Drawn Uneven Horizontal Ruled Notebook Lines
-        <svg
-          className="w-full h-full transition-opacity duration-500"
+          className="w-full h-full"
           xmlns="http://www.w3.org/2000/svg"
           width="100%"
           height="100%"
@@ -81,17 +42,9 @@ export function DotGridBackground() {
               patternUnits="userSpaceOnUse"
             >
               {NOTEBOOK_HORIZONTAL_LINES.map((line, idx) => {
-                // Uneven opacity: each line has its own unique opacity multiplier
-                const currentOpacity = Math.min(
-                  0.85,
-                  Math.max(0.06, lineOpacity * line.opacityMultiplier)
-                );
-
-                // Hand-drawn blue notebook ink in light mode, luminous chalk/gel pen in dark mode
-                const strokeColor =
-                  theme === "dark"
-                    ? `rgba(138, 175, 248, ${currentOpacity.toFixed(3)})`
-                    : `rgba(90, 130, 218, ${currentOpacity.toFixed(3)})`;
+                // 4% base transparency with uneven hand-drawn variation
+                const currentOpacity = (0.04 * line.opacityMultiplier).toFixed(4);
+                const strokeColor = `rgba(90, 130, 218, ${currentOpacity})`;
 
                 return (
                   <path
@@ -102,9 +55,6 @@ export function DotGridBackground() {
                     strokeWidth={line.strokeWidth}
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    style={{
-                      transition: "stroke 0.4s ease-out, stroke-width 0.3s ease-out",
-                    }}
                   />
                 );
               })}
@@ -114,7 +64,39 @@ export function DotGridBackground() {
           {/* Lined paper pattern fill */}
           <rect width="100%" height="100%" fill="url(#handdrawn-lined-paper)" />
         </svg>
-      )}
+      </div>
+
+      {/* 2. Dark Mode Default: Dot Grid with 20% transparency, 24px spacing, 1.8px dot size */}
+      <div
+        className={`absolute inset-0 transition-opacity duration-500 ease-out ${
+          isDark ? "opacity-100" : "opacity-0"
+        }`}
+      >
+        <svg
+          className="w-full h-full"
+          xmlns="http://www.w3.org/2000/svg"
+          width="100%"
+          height="100%"
+        >
+          <defs>
+            <pattern
+              id="spiral-dot-pattern"
+              width={24}
+              height={24}
+              patternUnits="userSpaceOnUse"
+              patternContentUnits="userSpaceOnUse"
+            >
+              <circle
+                cx={12}
+                cy={12}
+                r={0.9}
+                fill="rgba(255, 255, 255, 0.20)"
+              />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#spiral-dot-pattern)" />
+        </svg>
+      </div>
 
       {/* Authentic Tactile Paper Noise Texture (Light & Dark modes) */}
       <div
@@ -123,8 +105,8 @@ export function DotGridBackground() {
           backgroundImage: "url('/paper-noise.png')",
           backgroundRepeat: "repeat",
           backgroundSize: "200px 200px",
-          opacity: theme === "dark" ? 0.06 : 0.055,
-          mixBlendMode: theme === "dark" ? "screen" : "multiply",
+          opacity: isDark ? 0.06 : 0.055,
+          mixBlendMode: isDark ? "screen" : "multiply",
         }}
         aria-hidden="true"
       />
@@ -133,10 +115,9 @@ export function DotGridBackground() {
       <div
         className="absolute inset-0 pointer-events-none transition-opacity duration-500"
         style={{
-          background:
-            theme === "dark"
-              ? "radial-gradient(ellipse at 50% 35%, transparent 60%, rgba(9,10,15,0.45) 100%)"
-              : "radial-gradient(ellipse at 50% 35%, transparent 65%, rgba(253,251,247,0.4) 100%)",
+          background: isDark
+            ? "radial-gradient(ellipse at 50% 35%, transparent 60%, rgba(9,10,15,0.45) 100%)"
+            : "radial-gradient(ellipse at 50% 35%, transparent 65%, rgba(253,251,247,0.4) 100%)",
         }}
       />
     </div>

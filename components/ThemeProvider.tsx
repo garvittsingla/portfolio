@@ -12,14 +12,14 @@ export interface DotGridConfig {
 }
 
 const DEFAULT_LIGHT_CONFIG: DotGridConfig = {
-  opacity: 0.12,
+  opacity: 0.04,
   size: 1.2,
   spacing: 24,
 };
 
 const DEFAULT_DARK_CONFIG: DotGridConfig = {
-  opacity: 0.15,
-  size: 1.2,
+  opacity: 0.20,
+  size: 1.8,
   spacing: 24,
 };
 
@@ -41,9 +41,11 @@ function initStoreIfNeeded() {
   if (typeof window === "undefined" || isInitialized) return;
   isInitialized = true;
   try {
+    // Clear out legacy customizer storage so defaults apply cleanly
+    localStorage.removeItem("portfolio_dot_config");
+    localStorage.removeItem("portfolio_bg_style");
+
     const storedTheme = localStorage.getItem("portfolio_theme") as Theme | null;
-    const storedConfig = localStorage.getItem("portfolio_dot_config");
-    const storedBgStyle = localStorage.getItem("portfolio_bg_style") as BackgroundStyle | null;
 
     let activeTheme: Theme = "light";
     if (storedTheme === "light" || storedTheme === "dark") {
@@ -52,15 +54,8 @@ function initStoreIfNeeded() {
       activeTheme = "dark";
     }
 
-    let config = activeTheme === "dark" ? DEFAULT_DARK_CONFIG : DEFAULT_LIGHT_CONFIG;
-    if (storedConfig) {
-      config = JSON.parse(storedConfig);
-    }
-
-    let bgStyle: BackgroundStyle = "lined";
-    if (storedBgStyle === "lined" || storedBgStyle === "dots") {
-      bgStyle = storedBgStyle;
-    }
+    const config = activeTheme === "dark" ? DEFAULT_DARK_CONFIG : DEFAULT_LIGHT_CONFIG;
+    const bgStyle: BackgroundStyle = activeTheme === "dark" ? "dots" : "lined";
 
     store = { theme: activeTheme, dotConfig: config, backgroundStyle: bgStyle };
   } catch {
@@ -97,8 +92,6 @@ function getServerSnapshot(): StoreState {
 function persistStore() {
   try {
     localStorage.setItem("portfolio_theme", store.theme);
-    localStorage.setItem("portfolio_dot_config", JSON.stringify(store.dotConfig));
-    localStorage.setItem("portfolio_bg_style", store.backgroundStyle);
   } catch {
     // ignore
   }
@@ -142,29 +135,32 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.classList.add("dark");
       root.style.setProperty("--background", "#090a0f");
       root.style.setProperty("--foreground", "#fafafa");
-      root.style.setProperty("--dot-color", `rgba(138, 175, 248, ${dotConfig.opacity})`);
+      root.style.setProperty("--dot-color", "rgba(255, 255, 255, 0.20)");
+      root.style.setProperty("--dot-size", "1.8px");
+      root.style.setProperty("--dot-spacing", "24px");
     } else {
       root.classList.remove("dark");
       root.style.setProperty("--background", "#fdfbf7");
       root.style.setProperty("--foreground", "#09090b");
-      root.style.setProperty("--dot-color", `rgba(108, 143, 224, ${dotConfig.opacity})`);
+      root.style.setProperty("--dot-color", "rgba(90, 130, 218, 0.04)");
+      root.style.setProperty("--dot-size", "1.2px");
+      root.style.setProperty("--dot-spacing", "24px");
     }
-
-    root.style.setProperty("--dot-size", `${dotConfig.size}px`);
-    root.style.setProperty("--dot-spacing", `${dotConfig.spacing}px`);
-  }, [theme, dotConfig, isHydrated]);
+  }, [theme, isHydrated]);
 
   const setTheme = (newTheme: Theme) => {
-    store = { ...store, theme: newTheme };
+    store = {
+      theme: newTheme,
+      dotConfig: newTheme === "dark" ? DEFAULT_DARK_CONFIG : DEFAULT_LIGHT_CONFIG,
+      backgroundStyle: newTheme === "dark" ? "dots" : "lined",
+    };
     persistStore();
     notify();
   };
 
   const toggleTheme = () => {
     const nextTheme: Theme = store.theme === "light" ? "dark" : "light";
-    store = { ...store, theme: nextTheme };
-    persistStore();
-    notify();
+    setTheme(nextTheme);
   };
 
   const setBackgroundStyle = (style: BackgroundStyle) => {
