@@ -62,29 +62,12 @@ export function FloatingNavbar() {
       >
         {/* Navigation Links */}
         <nav className="flex items-center gap-3.5 sm:gap-6 text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400">
-          <a
-            href="#intro"
-            className="hover:text-neutral-950 dark:hover:text-white transition-colors"
-          >
-            intro
-          </a>
-          <a
-            href="#activity"
-            className="hover:text-neutral-950 dark:hover:text-white transition-colors"
-          >
-            activity
-          </a>
+
           <a
             href="#experience"
             className="hover:text-neutral-950 dark:hover:text-white transition-colors"
           >
             work
-          </a>
-          <a
-            href="#leetcode"
-            className="hover:text-neutral-950 dark:hover:text-white transition-colors"
-          >
-            leetcode
           </a>
           <a
             href="#achievements"

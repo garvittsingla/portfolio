@@ -40,6 +40,10 @@ export function NotebookIntro() {
       fadeIntervalRef.current = null;
     }
     if (sketchAudioRef.current) {
+      if (!sketchAudioRef.current.paused) {
+        hasPlayedAudioRef.current = true;
+        return;
+      }
       sketchAudioRef.current.currentTime = 0;
       sketchAudioRef.current.volume = TARGET_VOLUME;
       sketchAudioRef.current.loop = true;
@@ -87,8 +91,22 @@ export function NotebookIntro() {
     }
   }, []);
 
+  const togglePencilSound = () => {
+    if (!isMutedRef.current) {
+      isMutedRef.current = true;
+      setIsMuted(true);
+      sketchAudioRef.current?.pause();
+      return;
+    }
+
+    isMutedRef.current = false;
+    setIsMuted(false);
+    if (isTypingDoneRef.current) runHandwritingAnimation(true);
+    else startPencilSound();
+  };
+
   // Unified handwriting typewriter animation
-  const runHandwritingAnimation = useCallback(() => {
+  const runHandwritingAnimation = useCallback((startSoundFromGesture = false) => {
     // 1. Clear any active timeouts or intervals
     if (startTimeoutRef.current) {
       clearTimeout(startTimeoutRef.current);
@@ -109,6 +127,10 @@ export function NotebookIntro() {
       sketchAudioRef.current.currentTime = 0;
       sketchAudioRef.current.volume = isMutedRef.current ? 0 : TARGET_VOLUME;
     }
+
+    // Start inside the click/tap handler so browser autoplay policies see
+    // this as a user initiated play request.
+    if (startSoundFromGesture) startPencilSound();
 
     setDisplayedText("");
     setIsTypingDone(false);
@@ -151,37 +173,25 @@ export function NotebookIntro() {
     // Run initial handwriting animation
     runHandwritingAnimation();
 
-    // If browser blocks audio on page load without user gesture,
-    // listen for the very first interaction anywhere on the window to unlock & play!
-    const handleFirstGesture = () => {
-      if (isMutedRef.current) return;
+    // Retry blocked autoplay on every gesture until audio actually starts.
+    const handleFirstGesture = (event: Event) => {
+      if (isMutedRef.current || hasPlayedAudioRef.current) return;
 
-      if (!hasPlayedAudioRef.current) {
-        hasPlayedAudioRef.current = true;
-        setIsAudioBlocked(false);
-
-        if (!isTypingDoneRef.current) {
-          // Still in the middle of typing: start sound immediately
-          if (sketchAudioRef.current) {
-            sketchAudioRef.current.currentTime = 0;
-            sketchAudioRef.current.volume = TARGET_VOLUME;
-            sketchAudioRef.current.loop = true;
-            sketchAudioRef.current.play().catch(() => {});
-          }
-        } else {
-          // Finished typing silently before user interacted: replay with sound!
-          runHandwritingAnimation();
-        }
+      const target = event.target;
+      const isReplayControl = target instanceof Element && target.closest("[data-handwriting-replay], [data-audio-toggle]");
+      if (isReplayControl) return;
+      if (isTypingDoneRef.current) {
+        runHandwritingAnimation(true);
+      } else {
+        startPencilSound();
       }
     };
 
     window.addEventListener("pointerdown", handleFirstGesture, { passive: true });
-    window.addEventListener("touchstart", handleFirstGesture, { passive: true });
     window.addEventListener("keydown", handleFirstGesture, { passive: true });
 
     return () => {
       window.removeEventListener("pointerdown", handleFirstGesture);
-      window.removeEventListener("touchstart", handleFirstGesture);
       window.removeEventListener("keydown", handleFirstGesture);
       if (sketchAudioRef.current) {
         sketchAudioRef.current.pause();
@@ -196,7 +206,7 @@ export function NotebookIntro() {
         clearInterval(fadeIntervalRef.current);
       }
     };
-  }, [runHandwritingAnimation]);
+  }, [runHandwritingAnimation, startPencilSound]);
 
   // Derived sliced texts
   const prefixText = displayedText.slice(0, prefix.length);
@@ -219,7 +229,8 @@ export function NotebookIntro() {
 
         {/* Drawing container with organic paper tilt */}
         <div
-          onClick={runHandwritingAnimation}
+          onClick={() => runHandwritingAnimation(true)}
+          data-handwriting-replay
           title="Click to replay writing & sound"
           className={`
             group relative p-1 transition-all duration-500 ease-out
@@ -276,7 +287,8 @@ export function NotebookIntro() {
       {/* 2. Handwritten text: "hey i am" + distinguished "garvit singla" without typing cursor */}
       <div className="flex flex-col items-center sm:items-start space-y-1 text-center sm:text-left w-full max-w-full px-2 sm:px-0">
         <div
-          onClick={runHandwritingAnimation}
+          onClick={() => runHandwritingAnimation(true)}
+          data-handwriting-replay
           title="Click to replay writing & sound"
           className="relative inline-block rotate-[-1deg] transition-transform duration-300 hover:rotate-0 cursor-pointer max-w-full"
         >
@@ -344,7 +356,8 @@ export function NotebookIntro() {
             <div className="flex items-center gap-1 animate-in fade-in duration-300">
               <button
                 type="button"
-                onClick={runHandwritingAnimation}
+                onClick={() => runHandwritingAnimation(true)}
+                data-handwriting-replay
                 title="Replay handwriting & sound"
                 aria-label="Replay handwriting and pencil sound"
                 className="p-1 rounded text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors opacity-70 hover:opacity-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
@@ -354,9 +367,10 @@ export function NotebookIntro() {
 
               <button
                 type="button"
-                onClick={() => setIsMuted((m) => !m)}
-                title={isMuted ? "Unmute pencil sound" : "Mute pencil sound"}
-                aria-label={isMuted ? "Unmute pencil sound" : "Mute pencil sound"}
+                onClick={togglePencilSound}
+                data-audio-toggle
+                title={isAudioBlocked && !isMuted ? "Pencil audio starts after your first tap or key press" : isMuted ? "Unmute pencil sound" : "Mute pencil sound"}
+                aria-label={isMuted ? "Unmute pencil sound" : isAudioBlocked ? "Pencil sound will start on your first interaction" : "Mute pencil sound"}
                 className={`p-1 rounded transition-colors ${
                   isMuted
                     ? "text-red-400 hover:text-red-600 opacity-80"
