@@ -55,7 +55,7 @@ export function FloatingNavbar() {
           navbar-morph-card
           ${
             isScrolled
-              ? "max-w-[340px] sm:max-w-[430px] px-3.5 sm:px-5 py-2 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]"
+              ? "max-w-[380px] sm:max-w-[500px] px-3.5 sm:px-5 py-2 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]"
               : "max-w-4xl px-3 sm:px-8 py-3 sm:py-4 bg-transparent border border-transparent shadow-none"
           }
         `}
@@ -73,6 +73,12 @@ export function FloatingNavbar() {
             className="hover:text-neutral-950 dark:hover:text-white transition-colors"
           >
             activity
+          </a>
+          <a
+            href="#experience"
+            className="hover:text-neutral-950 dark:hover:text-white transition-colors"
+          >
+            work
           </a>
           <a
             href="#leetcode"

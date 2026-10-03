@@ -8,6 +8,7 @@ import { NotebookIntro } from "@/components/NotebookIntro";
 import { GithubContributionsSticky } from "@/components/GithubContributionsSticky";
 import { LeetCodeStats } from "@/components/LeetCodeStats";
 import { AchievementsHanging } from "@/components/AchievementsHanging";
+import { ExperienceSection } from "@/components/ExperienceSection";
 
 export default function Home() {
   return (
@@ -27,6 +28,8 @@ export default function Home() {
         <div id="intro">
           <NotebookIntro />
         </div>
+
+        <ExperienceSection />
 
         <AchievementsHanging />
 
