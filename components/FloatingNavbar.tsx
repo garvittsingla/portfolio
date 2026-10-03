@@ -80,6 +80,12 @@ export function FloatingNavbar() {
           >
             leetcode
           </a>
+          <a
+            href="#achievements"
+            className="hover:text-neutral-950 dark:hover:text-white transition-colors"
+          >
+            wins
+          </a>
         </nav>
 
         {/* Right: Local time & Theme Toggle Switch */}

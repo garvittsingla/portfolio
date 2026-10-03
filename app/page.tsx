@@ -7,6 +7,7 @@ import { FloatingNotebookDoodles } from "@/components/FloatingNotebookDoodles";
 import { NotebookIntro } from "@/components/NotebookIntro";
 import { GithubContributionsSticky } from "@/components/GithubContributionsSticky";
 import { LeetCodeStats } from "@/components/LeetCodeStats";
+import { AchievementsHanging } from "@/components/AchievementsHanging";
 
 export default function Home() {
   return (
@@ -26,6 +27,8 @@ export default function Home() {
         <div id="intro">
           <NotebookIntro />
         </div>
+
+        <AchievementsHanging />
 
         {/* GitHub Contribution Sticky Note Component */}
         <div id="activity">
