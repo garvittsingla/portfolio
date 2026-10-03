@@ -52,9 +52,12 @@ export const metadata: Metadata = {
 const themeInitScript = `
   (function() {
     try {
+      var urlParams = new URLSearchParams(window.location.search);
+      var themeParam = urlParams.get('theme');
       var saved = localStorage.getItem('portfolio_theme');
       var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-      if (saved === 'dark' || (!saved && prefersDark)) {
+      var isDark = themeParam === 'dark' ? true : (themeParam === 'light' ? false : (saved === 'dark' || (!saved && prefersDark)));
+      if (isDark) {
         document.documentElement.classList.add('dark');
         document.documentElement.style.setProperty('--background', '#090a0f');
         document.documentElement.style.setProperty('--foreground', '#fafafa');

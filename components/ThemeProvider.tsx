@@ -45,10 +45,14 @@ function initStoreIfNeeded() {
     localStorage.removeItem("portfolio_dot_config");
     localStorage.removeItem("portfolio_bg_style");
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const themeParam = urlParams.get("theme") as Theme | null;
     const storedTheme = localStorage.getItem("portfolio_theme") as Theme | null;
 
     let activeTheme: Theme = "light";
-    if (storedTheme === "light" || storedTheme === "dark") {
+    if (themeParam === "light" || themeParam === "dark") {
+      activeTheme = themeParam;
+    } else if (storedTheme === "light" || storedTheme === "dark") {
       activeTheme = storedTheme;
     } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
       activeTheme = "dark";

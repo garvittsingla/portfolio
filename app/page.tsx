@@ -5,6 +5,7 @@ import { DotGridBackground } from "@/components/DotGridBackground";
 import { FloatingNavbar } from "@/components/FloatingNavbar";
 import { FloatingNotebookDoodles } from "@/components/FloatingNotebookDoodles";
 import { NotebookIntro } from "@/components/NotebookIntro";
+import { GithubContributionsSticky } from "@/components/GithubContributionsSticky";
 import { EmptySection } from "@/components/EmptySection";
 
 export default function Home() {
@@ -24,6 +25,11 @@ export default function Home() {
         {/* Intro section positioned closer to top */}
         <div id="intro">
           <NotebookIntro />
+        </div>
+
+        {/* GitHub Contribution Sticky Note Component */}
+        <div id="activity">
+          <GithubContributionsSticky />
         </div>
 
         {/* Empty component below providing scroll depth and future space */}
