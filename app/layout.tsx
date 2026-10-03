@@ -49,11 +49,11 @@ const themeInitScript = `
       var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (saved === 'dark' || (!saved && prefersDark)) {
         document.documentElement.classList.add('dark');
-        document.documentElement.style.setProperty('--background', '#09090b');
+        document.documentElement.style.setProperty('--background', '#090a0f');
         document.documentElement.style.setProperty('--foreground', '#fafafa');
       } else {
         document.documentElement.classList.remove('dark');
-        document.documentElement.style.setProperty('--background', '#ffffff');
+        document.documentElement.style.setProperty('--background', '#fdfbf7');
         document.documentElement.style.setProperty('--foreground', '#09090b');
       }
     } catch (e) {}

@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useSyncExternalStore } from "react";
 
 export type Theme = "light" | "dark";
+export type BackgroundStyle = "lined" | "dots";
 
 export interface DotGridConfig {
   opacity: number; // 0.04 to 0.40
@@ -25,11 +26,13 @@ const DEFAULT_DARK_CONFIG: DotGridConfig = {
 interface StoreState {
   theme: Theme;
   dotConfig: DotGridConfig;
+  backgroundStyle: BackgroundStyle;
 }
 
 let store: StoreState = {
   theme: "light",
   dotConfig: DEFAULT_LIGHT_CONFIG,
+  backgroundStyle: "lined",
 };
 
 let isInitialized = false;
@@ -40,6 +43,7 @@ function initStoreIfNeeded() {
   try {
     const storedTheme = localStorage.getItem("portfolio_theme") as Theme | null;
     const storedConfig = localStorage.getItem("portfolio_dot_config");
+    const storedBgStyle = localStorage.getItem("portfolio_bg_style") as BackgroundStyle | null;
 
     let activeTheme: Theme = "light";
     if (storedTheme === "light" || storedTheme === "dark") {
@@ -53,7 +57,12 @@ function initStoreIfNeeded() {
       config = JSON.parse(storedConfig);
     }
 
-    store = { theme: activeTheme, dotConfig: config };
+    let bgStyle: BackgroundStyle = "lined";
+    if (storedBgStyle === "lined" || storedBgStyle === "dots") {
+      bgStyle = storedBgStyle;
+    }
+
+    store = { theme: activeTheme, dotConfig: config, backgroundStyle: bgStyle };
   } catch {
     // fallback
   }
@@ -81,6 +90,7 @@ function getServerSnapshot(): StoreState {
   return {
     theme: "light",
     dotConfig: DEFAULT_LIGHT_CONFIG,
+    backgroundStyle: "lined",
   };
 }
 
@@ -88,6 +98,7 @@ function persistStore() {
   try {
     localStorage.setItem("portfolio_theme", store.theme);
     localStorage.setItem("portfolio_dot_config", JSON.stringify(store.dotConfig));
+    localStorage.setItem("portfolio_bg_style", store.backgroundStyle);
   } catch {
     // ignore
   }
@@ -97,6 +108,8 @@ interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
+  backgroundStyle: BackgroundStyle;
+  setBackgroundStyle: (style: BackgroundStyle) => void;
   dotConfig: DotGridConfig;
   setDotOpacity: (opacity: number) => void;
   setDotSize: (size: number) => void;
@@ -114,7 +127,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     () => false
   );
 
-  const { theme, dotConfig } = useSyncExternalStore(
+  const { theme, dotConfig, backgroundStyle } = useSyncExternalStore(
     subscribe,
     getSnapshot,
     getServerSnapshot
@@ -127,14 +140,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const root = document.documentElement;
     if (theme === "dark") {
       root.classList.add("dark");
-      root.style.setProperty("--background", "#09090b");
+      root.style.setProperty("--background", "#090a0f");
       root.style.setProperty("--foreground", "#fafafa");
-      root.style.setProperty("--dot-color", `rgba(255, 255, 255, ${dotConfig.opacity})`);
+      root.style.setProperty("--dot-color", `rgba(138, 175, 248, ${dotConfig.opacity})`);
     } else {
       root.classList.remove("dark");
-      root.style.setProperty("--background", "#ffffff");
+      root.style.setProperty("--background", "#fdfbf7");
       root.style.setProperty("--foreground", "#09090b");
-      root.style.setProperty("--dot-color", `rgba(0, 0, 0, ${dotConfig.opacity})`);
+      root.style.setProperty("--dot-color", `rgba(108, 143, 224, ${dotConfig.opacity})`);
     }
 
     root.style.setProperty("--dot-size", `${dotConfig.size}px`);
@@ -150,6 +163,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = () => {
     const nextTheme: Theme = store.theme === "light" ? "dark" : "light";
     store = { ...store, theme: nextTheme };
+    persistStore();
+    notify();
+  };
+
+  const setBackgroundStyle = (style: BackgroundStyle) => {
+    store = { ...store, backgroundStyle: style };
     persistStore();
     notify();
   };
@@ -189,6 +208,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     store = {
       ...store,
       dotConfig: reset,
+      backgroundStyle: "lined",
     };
     persistStore();
     notify();
@@ -200,6 +220,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         theme,
         setTheme,
         toggleTheme,
+        backgroundStyle,
+        setBackgroundStyle,
         dotConfig,
         setDotOpacity,
         setDotSize,
