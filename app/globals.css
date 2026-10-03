@@ -36,4 +36,18 @@ body {
   font-family: var(--font-handwriting), "Gloria Hallelujah", cursive, sans-serif;
 }
 
+/* Fluid smooth navbar morph transitions */
+.navbar-morph-container {
+  transition: padding 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navbar-morph-card {
+  transition: max-width 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              padding 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: max-width, padding, background-color, border-color, box-shadow;
+}
+
 

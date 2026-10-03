@@ -81,7 +81,7 @@ export function ThemeToggleSwitch({ showLabel = false, size = "md" }: ThemeToggl
         <span
           className={`
             relative flex items-center justify-center rounded-full shadow-md
-            transform transition-all duration-500 cubic-bezier(0.34, 1.56, 0.64, 1)
+            transform transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]
             group-active:scale-95
             ${sizeClasses.thumb}
             ${

@@ -17,8 +17,8 @@ export default function Home() {
       <FloatingNavbar />
 
       {/* Main Content Area */}
-      <main className="w-full flex-1 pt-[22vh] sm:pt-[24vh]">
-        {/* Intro section positioned 20% from top */}
+      <main className="w-full flex-1 pt-[12vh] sm:pt-[14vh]">
+        {/* Intro section positioned closer to top */}
         <div id="intro">
           <NotebookIntro />
         </div>

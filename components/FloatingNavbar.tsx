@@ -8,8 +8,13 @@ export function FloatingNavbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      // Trigger floating glassmorphic transition after 24px scroll
-      setIsScrolled(window.scrollY > 24);
+      const y = window.scrollY;
+      setIsScrolled((prev) => {
+        // Hysteresis: morph to pill after 45px scroll, return to banner under 15px
+        if (!prev && y > 45) return true;
+        if (prev && y < 15) return false;
+        return prev;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -21,16 +26,22 @@ export function FloatingNavbar() {
   return (
     <header
       className={`
-        fixed left-1/2 -translate-x-1/2 z-50 select-none
-        transition-all duration-400 cubic-bezier(0.16, 1, 0.3, 1)
-        ${
-          isScrolled
-            ? "top-3 sm:top-4 w-[90vw] sm:w-auto px-4 sm:px-6 py-2 rounded-full bg-white/75 dark:bg-neutral-900/75 backdrop-blur-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-lg shadow-neutral-950/5 dark:shadow-black/40"
-            : "top-0 w-full max-w-4xl py-4 sm:py-5 px-6 rounded-none bg-transparent border-b border-transparent shadow-none"
-        }
+        fixed top-0 inset-x-0 z-50 flex justify-center pointer-events-none select-none
+        navbar-morph-container
+        ${isScrolled ? "pt-2.5 sm:pt-3.5" : "pt-4 sm:pt-6"}
       `}
     >
-      <div className="w-full flex items-center justify-between gap-4 sm:gap-8">
+      <div
+        className={`
+          pointer-events-auto w-[calc(100%-2rem)] flex items-center justify-between rounded-full
+          navbar-morph-card
+          ${
+            isScrolled
+              ? "max-w-[340px] sm:max-w-[430px] px-4 sm:px-5 py-2 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)]"
+              : "max-w-4xl px-6 sm:px-8 py-3.5 sm:py-4 bg-transparent border border-transparent shadow-none"
+          }
+        `}
+      >
         {/* Navigation Links */}
         <nav className="flex items-center gap-4 sm:gap-6 text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400">
           <a
@@ -59,7 +70,7 @@ export function FloatingNavbar() {
               text-neutral-600 dark:text-neutral-300
               hover:text-neutral-950 dark:hover:text-white
               hover:border-neutral-400 dark:hover:border-neutral-600
-              transition-all duration-200
+              transition-all duration-300
               ${isScrolled ? "px-2.5 py-1" : "px-3 py-1.5"}
             `}
             aria-label="GitHub Profile"

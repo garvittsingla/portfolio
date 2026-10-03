@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 
 export function NotebookIntro() {
   const prefix = "hey i am ";
@@ -12,20 +12,130 @@ export function NotebookIntro() {
   const [displayedText, setDisplayedText] = useState("");
   const [isTypingDone, setIsTypingDone] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const TARGET_VOLUME = 0.4; // 40% volume as requested
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const sketchAudioRef = useRef<HTMLAudioElement | null>(null);
+  const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMutedRef = useRef(false);
 
-  // Initialize Audio with downloaded Pixabay pencil sound
+  // Sync ref with state
   useEffect(() => {
-    const audio = new Audio("/pencil-sketch.mp3");
-    audio.preload = "auto";
-    audio.volume = 0.65; // Clearly audible volume
-    audioRef.current = audio;
+    isMutedRef.current = isMuted;
+    if (isMuted && sketchAudioRef.current) {
+      sketchAudioRef.current.pause();
+    }
+  }, [isMuted]);
+
+  // Function to start the subtle Pixabay household pencil sound at 40% volume
+  const startPencilSound = useCallback(() => {
+    if (isMutedRef.current) return;
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+      fadeIntervalRef.current = null;
+    }
+    if (sketchAudioRef.current) {
+      sketchAudioRef.current.currentTime = 0;
+      sketchAudioRef.current.volume = TARGET_VOLUME;
+      sketchAudioRef.current.loop = true;
+      sketchAudioRef.current.play().catch(() => {
+        // Autoplay may be restricted by browser until user gesture
+      });
+    }
+  }, []);
+
+  // Function to stop the pencil sound smoothly
+  const stopPencilSound = useCallback(() => {
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+      fadeIntervalRef.current = null;
+    }
+    if (sketchAudioRef.current) {
+      let vol = sketchAudioRef.current.volume;
+      fadeIntervalRef.current = setInterval(() => {
+        if (sketchAudioRef.current && vol > 0.05) {
+          vol -= 0.08;
+          sketchAudioRef.current.volume = Math.max(0, vol);
+        } else {
+          if (sketchAudioRef.current) {
+            sketchAudioRef.current.pause();
+            sketchAudioRef.current.currentTime = 0;
+            sketchAudioRef.current.volume = isMutedRef.current ? 0 : TARGET_VOLUME;
+          }
+          if (fadeIntervalRef.current) {
+            clearInterval(fadeIntervalRef.current);
+            fadeIntervalRef.current = null;
+          }
+        }
+      }, 20);
+    }
+  }, []);
+
+  // Unified handwriting typewriter animation
+  const runHandwritingAnimation = useCallback(() => {
+    // 1. Clear any active timeouts or intervals
+    if (startTimeoutRef.current) {
+      clearTimeout(startTimeoutRef.current);
+      startTimeoutRef.current = null;
+    }
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+      typingIntervalRef.current = null;
+    }
+    if (fadeIntervalRef.current) {
+      clearInterval(fadeIntervalRef.current);
+      fadeIntervalRef.current = null;
+    }
+
+    // 2. Stop audio immediately and reset
+    if (sketchAudioRef.current) {
+      sketchAudioRef.current.pause();
+      sketchAudioRef.current.currentTime = 0;
+      sketchAudioRef.current.volume = isMutedRef.current ? 0 : TARGET_VOLUME;
+    }
+
+    setDisplayedText("");
+    setIsTypingDone(false);
+
+    let currentIndex = 0;
+
+    startTimeoutRef.current = setTimeout(() => {
+      typingIntervalRef.current = setInterval(() => {
+        if (currentIndex <= fullText.length) {
+          setDisplayedText(fullText.slice(0, currentIndex));
+
+          // Start pencil sound right as writing begins
+          if (currentIndex === 1) {
+            startPencilSound();
+          }
+
+          currentIndex++;
+        } else {
+          // Writing finished
+          if (typingIntervalRef.current) {
+            clearInterval(typingIntervalRef.current);
+            typingIntervalRef.current = null;
+          }
+          stopPencilSound();
+          setIsTypingDone(true);
+        }
+      }, 65);
+    }, 150);
+  }, [fullText, startPencilSound, stopPencilSound]);
+
+  // Initialize audio element with downloaded Pixabay household-pencil-29272
+  useEffect(() => {
+    const sketchAudio = new Audio("/pencil-sketch.mp3");
+    sketchAudio.preload = "auto";
+    sketchAudio.volume = TARGET_VOLUME;
+    sketchAudioRef.current = sketchAudio;
 
     // Global unlock listener to satisfy browser autoplay policy on first interaction
     const unlockAudio = () => {
-      if (audioRef.current) {
-        audioRef.current.load();
+      if (sketchAudioRef.current) {
+        sketchAudioRef.current.load();
       }
     };
 
@@ -33,101 +143,27 @@ export function NotebookIntro() {
     window.addEventListener("scroll", unlockAudio, { once: true });
     window.addEventListener("keydown", unlockAudio, { once: true });
 
+    // Run initial handwriting animation
+    runHandwritingAnimation();
+
     return () => {
       window.removeEventListener("pointerdown", unlockAudio);
       window.removeEventListener("scroll", unlockAudio);
       window.removeEventListener("keydown", unlockAudio);
-      if (audioRef.current) {
-        audioRef.current.pause();
+      if (sketchAudioRef.current) {
+        sketchAudioRef.current.pause();
+      }
+      if (startTimeoutRef.current) {
+        clearTimeout(startTimeoutRef.current);
+      }
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+      }
+      if (fadeIntervalRef.current) {
+        clearInterval(fadeIntervalRef.current);
       }
     };
-  }, []);
-
-  // Function to start the downloaded pencil sound
-  const startPencilSound = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.volume = 0.65;
-      audioRef.current.play().catch(() => {
-        // Autoplay restricted until user interaction
-      });
-    }
-  };
-
-  // Function to stop the pencil sound smoothly
-  const stopPencilSound = () => {
-    if (audioRef.current) {
-      let vol = audioRef.current.volume;
-      const fadeInterval = setInterval(() => {
-        if (audioRef.current && vol > 0.08) {
-          vol -= 0.1;
-          audioRef.current.volume = Math.max(0, vol);
-        } else {
-          if (audioRef.current) {
-            audioRef.current.pause();
-            audioRef.current.currentTime = 0;
-          }
-          clearInterval(fadeInterval);
-        }
-      }, 25);
-    }
-  };
-
-  // Replay animation with guaranteed user-gesture audio playback
-  const replayWriting = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.volume = 0.65;
-      audioRef.current.play().catch(() => {});
-    }
-
-    setDisplayedText("");
-    setIsTypingDone(false);
-
-    let currentIndex = 0;
-    const interval = setInterval(() => {
-      if (currentIndex <= fullText.length) {
-        setDisplayedText(fullText.slice(0, currentIndex));
-
-        if (currentIndex === prefix.length + 1) {
-          startPencilSound();
-        }
-
-        currentIndex++;
-      } else {
-        stopPencilSound();
-        setIsTypingDone(true);
-        clearInterval(interval);
-      }
-    }, 70);
-  };
-
-  // Initial handwriting typewriter animation on page land
-  useEffect(() => {
-    let currentIndex = 0;
-    const startTimeout = setTimeout(() => {
-      const interval = setInterval(() => {
-        if (currentIndex <= fullText.length) {
-          setDisplayedText(fullText.slice(0, currentIndex));
-
-          // Start pencil sound when writing "garvit singla"
-          if (currentIndex === prefix.length + 1) {
-            startPencilSound();
-          }
-
-          currentIndex++;
-        } else {
-          stopPencilSound();
-          setIsTypingDone(true);
-          clearInterval(interval);
-        }
-      }, 70);
-
-      return () => clearInterval(interval);
-    }, 200);
-
-    return () => clearTimeout(startTimeout);
-  }, [fullText, prefix.length]);
+  }, [runHandwritingAnimation]);
 
   // Derived sliced texts
   const prefixText = displayedText.slice(0, prefix.length);
@@ -150,7 +186,7 @@ export function NotebookIntro() {
 
         {/* Drawing container with organic paper tilt */}
         <div
-          onClick={replayWriting}
+          onClick={runHandwritingAnimation}
           title="Click to replay writing & sound"
           className={`
             group relative p-1 transition-all duration-500 ease-out
@@ -207,7 +243,7 @@ export function NotebookIntro() {
       {/* 2. Handwritten text: "hey i am" + distinguished "garvit singla" without typing cursor */}
       <div className="flex flex-col items-start space-y-1">
         <div
-          onClick={replayWriting}
+          onClick={runHandwritingAnimation}
           title="Click to replay writing & sound"
           className="relative inline-block rotate-[-1deg] transition-transform duration-300 hover:rotate-0 cursor-pointer"
         >
@@ -260,8 +296,8 @@ export function NotebookIntro() {
           </svg>
         </div>
 
-        {/* Subtitle / Role with replay option */}
-        <div className="flex items-center gap-2">
+        {/* Subtitle / Role with replay option and sound toggle */}
+        <div className="flex items-center gap-2.5">
           <p
             className={`font-handwriting text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 transition-opacity duration-500 delay-100 rotate-[0.5deg] tracking-wide ${
               isTypingDone ? "opacity-85" : "opacity-0"
@@ -270,23 +306,43 @@ export function NotebookIntro() {
             engineer
           </p>
 
-          {/* Small subtle replay button */}
+          {/* Action buttons: Replay writing & Toggle pencil sound */}
           {isTypingDone && (
-            <button
-              type="button"
-              onClick={replayWriting}
-              title="Replay writing & sound"
-              aria-label="Replay writing and pencil sound"
-              className="p-1 rounded text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors opacity-60 hover:opacity-100"
-            >
-              <RotateCcw className="w-2.5 h-2.5" />
-            </button>
+            <div className="flex items-center gap-1 animate-in fade-in duration-300">
+              <button
+                type="button"
+                onClick={runHandwritingAnimation}
+                title="Replay handwriting & sound"
+                aria-label="Replay handwriting and pencil sound"
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 transition-colors opacity-70 hover:opacity-100 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              >
+                <RotateCcw className="w-3 h-3" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setIsMuted((m) => !m)}
+                title={isMuted ? "Unmute pencil sound" : "Mute pencil sound"}
+                aria-label={isMuted ? "Unmute pencil sound" : "Mute pencil sound"}
+                className={`p-1 rounded transition-colors ${
+                  isMuted
+                    ? "text-red-400 hover:text-red-600 opacity-80"
+                    : "text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 opacity-70 hover:opacity-100"
+                } hover:bg-neutral-100 dark:hover:bg-neutral-800`}
+              >
+                {isMuted ? (
+                  <VolumeX className="w-3 h-3" />
+                ) : (
+                  <Volume2 className="w-3 h-3" />
+                )}
+              </button>
+            </div>
           )}
         </div>
 
         {/* 3-4 lines intro */}
         <div
-          className={`pt-2.5 max-w-md space-y-1.5 transition-all duration-700 delay-200 ${
+          className={`pt-2 max-w-md space-y-1.5 transition-all duration-700 delay-200 ${
             isTypingDone ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
           }`}
         >
@@ -299,6 +355,126 @@ export function NotebookIntro() {
           <p className="text-xs sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
             Building performant tools and understanding computers from the metal up.
           </p>
+        </div>
+
+        {/* 4. Socials in hand-drawn doodle form */}
+        <div
+          className={`pt-3 flex flex-wrap items-center gap-2 sm:gap-2.5 transition-all duration-700 delay-300 ${
+            isTypingDone ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+          }`}
+        >
+          <span className="font-handwriting text-xs text-neutral-400 dark:text-neutral-500 mr-0.5 select-none rotate-[-2deg]">
+            ✎ socials ➔
+          </span>
+
+          {/* GitHub doodle */}
+          <a
+            href="https://github.com/garvittsingla"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+              border border-neutral-300/90 dark:border-neutral-700/80
+              bg-white/60 dark:bg-neutral-900/50 backdrop-blur-xs
+              text-neutral-700 dark:text-neutral-300
+              hover:text-black dark:hover:text-white
+              hover:border-neutral-800 dark:hover:border-neutral-200
+              hover:scale-105 transition-all duration-300
+              shadow-[1px_2px_0px_rgba(0,0,0,0.06)] dark:shadow-[1px_2px_0px_rgba(255,255,255,0.05)]
+              rotate-[-1.5deg] hover:rotate-0 cursor-pointer"
+            aria-label="GitHub Profile"
+          >
+            {/* Hand-drawn Octocat silhouette */}
+            <svg
+              viewBox="0 0 24 24"
+              className="w-3.5 h-3.5 fill-none stroke-current stroke-[1.8] stroke-linecap-round stroke-linejoin-round"
+            >
+              <path d="M9 19c-4.5 1.5-4.5-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 4.1 5.4 4.4 5.4 4.4a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 10.8c0 4.6 2.7 5.7 5.5 6-.4.4-.6 1.1-.6 2.1V21" />
+              <path d="M15 19.5c.5.8 1.2 1.2 2 1" strokeDasharray="1 2" />
+            </svg>
+            <span className="font-handwriting text-xs text-neutral-800 dark:text-neutral-200">github</span>
+          </a>
+
+          {/* LinkedIn doodle */}
+          <a
+            href="https://linkedin.com/in/garvitsingla"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+              border border-neutral-300/90 dark:border-neutral-700/80
+              bg-white/60 dark:bg-neutral-900/50 backdrop-blur-xs
+              text-neutral-700 dark:text-neutral-300
+              hover:text-blue-600 dark:hover:text-sky-400
+              hover:border-blue-400 dark:hover:border-sky-500
+              hover:scale-105 transition-all duration-300
+              shadow-[1px_2px_0px_rgba(0,0,0,0.06)] dark:shadow-[1px_2px_0px_rgba(255,255,255,0.05)]
+              rotate-[1.2deg] hover:rotate-0 cursor-pointer"
+            aria-label="LinkedIn Profile"
+          >
+            {/* Hand-drawn LinkedIn in-badge */}
+            <svg
+              viewBox="0 0 24 24"
+              className="w-3.5 h-3.5 fill-none stroke-current stroke-[1.8] stroke-linecap-round stroke-linejoin-round"
+            >
+              <path d="M3.5 6.5C3.3 4.8 4.6 3.5 6.5 3.3c3.6-.3 7.8-.2 11.2.2 1.8.2 3.1 1.6 3.1 3.4.1 3.7.2 7.7-.2 11.4-.2 1.8-1.5 3.1-3.3 3.2-3.8.3-7.8.2-11.6-.1-1.7-.1-3-1.5-3.1-3.2-.2-3.8-.2-7.9.9-11.7z" />
+              <circle cx="8" cy="8.5" r="1" fill="currentColor" />
+              <path d="M8 12v5.5" />
+              <path d="M12 17.5v-5.5m0 2c.4-1.5 1.3-2 2.5-2 1.7 0 2.5 1 2.5 3v4.5" />
+            </svg>
+            <span className="font-handwriting text-xs text-neutral-800 dark:text-neutral-200">linkedin</span>
+          </a>
+
+          {/* Twitter / X doodle */}
+          <a
+            href="https://twitter.com/garvitsingla"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+              border border-neutral-300/90 dark:border-neutral-700/80
+              bg-white/60 dark:bg-neutral-900/50 backdrop-blur-xs
+              text-neutral-700 dark:text-neutral-300
+              hover:text-black dark:hover:text-white
+              hover:border-neutral-800 dark:hover:border-neutral-200
+              hover:scale-105 transition-all duration-300
+              shadow-[1px_2px_0px_rgba(0,0,0,0.06)] dark:shadow-[1px_2px_0px_rgba(255,255,255,0.05)]
+              rotate-[-1deg] hover:rotate-0 cursor-pointer"
+            aria-label="Twitter Profile"
+          >
+            {/* Hand-drawn sketched X icon */}
+            <svg
+              viewBox="0 0 24 24"
+              className="w-3.5 h-3.5 fill-none stroke-current stroke-[1.8] stroke-linecap-round stroke-linejoin-round"
+            >
+              <path d="M4.5 4.5l14.8 15m.2-15L4.7 19.5" />
+              <path d="M6 4l12.5 13M18.5 4.5L7.5 18" strokeDasharray="2 3" opacity="0.5" />
+            </svg>
+            <span className="font-handwriting text-xs text-neutral-800 dark:text-neutral-200">twitter</span>
+          </a>
+
+          {/* Gmail doodle */}
+          <a
+            href="mailto:garvits093@gmail.com"
+            className="group relative inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+              border border-neutral-300/90 dark:border-neutral-700/80
+              bg-white/60 dark:bg-neutral-900/50 backdrop-blur-xs
+              text-neutral-700 dark:text-neutral-300
+              hover:text-rose-600 dark:hover:text-rose-400
+              hover:border-rose-300 dark:hover:border-rose-500
+              hover:scale-105 transition-all duration-300
+              shadow-[1px_2px_0px_rgba(0,0,0,0.06)] dark:shadow-[1px_2px_0px_rgba(255,255,255,0.05)]
+              rotate-[2deg] hover:rotate-0 cursor-pointer"
+            aria-label="Email Garvit Singla"
+          >
+            {/* Hand-drawn envelope sketch */}
+            <svg
+              viewBox="0 0 24 24"
+              className="w-3.5 h-3.5 fill-none stroke-current stroke-[1.8] stroke-linecap-round stroke-linejoin-round"
+            >
+              <path d="M3.5 6.5C3.4 5.3 4.4 4.5 5.5 4.4c4.3-.3 8.8-.2 13 .1 1.2.1 2.1 1 2.2 2.2.2 3.6.2 7.2-.1 10.8-.1 1.2-1.1 2.1-2.3 2.1-4.2.2-8.6.2-12.8-.2-1.1-.1-2-1-2.1-2.2-.3-3.6-.3-7.2.1-10.7z" />
+              <path d="M4 6l7.4 6.2c.4.3.9.3 1.3 0L20 6" />
+              <path d="M4 18l5.5-5M20 18l-5.5-5" strokeDasharray="1.5 2.5" opacity="0.6" />
+            </svg>
+            <span className="font-handwriting text-xs text-neutral-800 dark:text-neutral-200">gmail</span>
+          </a>
         </div>
       </div>
     </section>
