@@ -416,6 +416,10 @@ export function NotebookIntro() {
               rotate-[-1.5deg] hover:rotate-0 cursor-pointer"
             aria-label="GitHub Profile"
           >
+            <span className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-3 w-32 -translate-x-1/2 translate-y-1.5 rotate-[-4deg] rounded-sm bg-white p-2 pb-5 opacity-0 shadow-[0_5px_14px_rgba(0,0,0,0.2)] transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 dark:bg-neutral-100">
+              <Image src="/social-previews/github.png" alt="Screenshot of Garvit's GitHub profile" width={112} height={80} className="h-20 w-full object-cover" />
+              <span className="absolute inset-x-0 bottom-1 text-center font-handwriting text-[11px] text-neutral-700">github · garvittsingla</span>
+            </span>
             {/* Hand-drawn Octocat silhouette */}
             <svg
               viewBox="0 0 24 24"
@@ -443,6 +447,10 @@ export function NotebookIntro() {
               rotate-[1.2deg] hover:rotate-0 cursor-pointer"
             aria-label="LinkedIn Profile"
           >
+            <span className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-3 w-32 -translate-x-1/2 translate-y-1.5 rotate-[3deg] rounded-sm bg-white p-2 pb-5 opacity-0 shadow-[0_5px_14px_rgba(0,0,0,0.2)] transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 dark:bg-neutral-100">
+              <Image src="/social-previews/linkedin.png" alt="Screenshot of Garvit's LinkedIn profile" width={112} height={80} className="h-20 w-full object-cover" />
+              <span className="absolute inset-x-0 bottom-1 text-center font-handwriting text-[11px] text-neutral-700">linkedin · garvittsingla</span>
+            </span>
             {/* Hand-drawn LinkedIn in-badge */}
             <svg
               viewBox="0 0 24 24"
@@ -472,6 +480,10 @@ export function NotebookIntro() {
               rotate-[-1deg] hover:rotate-0 cursor-pointer"
             aria-label="Twitter Profile"
           >
+            <span className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-3 w-32 -translate-x-1/2 translate-y-1.5 rotate-[-2deg] rounded-sm bg-white p-2 pb-5 opacity-0 shadow-[0_5px_14px_rgba(0,0,0,0.2)] transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 dark:bg-neutral-100">
+              <Image src="/social-previews/x.png" alt="Screenshot of Garvit's X profile" width={112} height={80} className="h-20 w-full object-cover" />
+              <span className="absolute inset-x-0 bottom-1 text-center font-handwriting text-[11px] text-neutral-700">x · garvitsinglaa</span>
+            </span>
             {/* Hand-drawn sketched X icon */}
             <svg
               viewBox="0 0 24 24"
@@ -497,6 +509,10 @@ export function NotebookIntro() {
               rotate-[2deg] hover:rotate-0 cursor-pointer"
             aria-label="Email Garvit Singla"
           >
+            <span className="pointer-events-none absolute bottom-full left-1/2 z-30 mb-3 w-32 -translate-x-1/2 translate-y-1.5 rotate-[2deg] rounded-sm bg-white p-2 pb-5 opacity-0 shadow-[0_5px_14px_rgba(0,0,0,0.2)] transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-y-0 group-focus-visible:opacity-100 dark:bg-neutral-100">
+              <Image src="/social-previews/email.svg" alt="Illustrated email note preview" width={112} height={80} className="h-20 w-full object-cover" />
+              <span className="absolute inset-x-0 bottom-1 text-center font-handwriting text-[11px] text-neutral-700">say hello</span>
+            </span>
             {/* Hand-drawn envelope sketch */}
             <svg
               viewBox="0 0 24 24"

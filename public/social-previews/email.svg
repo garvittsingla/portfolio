@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 240">
+  <rect width="336" height="240" rx="12" fill="#fffaf0"/><rect x="18" y="18" width="300" height="204" rx="8" fill="#fff" stroke="#eadfc9"/>
+  <path d="M58 74h220v126H58z" fill="#fffaf0" stroke="#d9c8a9" stroke-width="3"/><path d="M58 76l110 84L278 76" fill="none" stroke="#c4aa7c" stroke-width="4"/>
+  <circle cx="168" cy="112" r="34" fill="#f4dfb5"/><path d="M150 116l18 14 18-14v-15l-18 14-18-14z" fill="#9a7541"/>
+  <text x="168" y="46" text-anchor="middle" font-family="Arial" font-size="13" fill="#725a36">A note for Garvit</text>
+  <text x="168" y="195" text-anchor="middle" font-family="Arial" font-size="12" fill="#725a36">say hello</text>
+</svg>

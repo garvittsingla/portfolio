@@ -6,7 +6,7 @@ import { FloatingNavbar } from "@/components/FloatingNavbar";
 import { FloatingNotebookDoodles } from "@/components/FloatingNotebookDoodles";
 import { NotebookIntro } from "@/components/NotebookIntro";
 import { GithubContributionsSticky } from "@/components/GithubContributionsSticky";
-import { EmptySection } from "@/components/EmptySection";
+import { LeetCodeStats } from "@/components/LeetCodeStats";
 
 export default function Home() {
   return (
@@ -32,8 +32,7 @@ export default function Home() {
           <GithubContributionsSticky />
         </div>
 
-        {/* Empty component below providing scroll depth and future space */}
-        <EmptySection />
+        <LeetCodeStats />
       </main>
     </div>
   );

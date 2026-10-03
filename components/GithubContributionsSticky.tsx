@@ -1,12 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import Image from "next/image";
 import {
   FALLBACK_CONTRIBUTION_DATA,
   ContributionDay,
   ContributionData,
 } from "./githubContributionsData";
-import { ChevronDown, ExternalLink, GitPullRequest, Star, Sparkles, Zap } from "lucide-react";
+import { ChevronDown, ExternalLink, GitPullRequest, Star, Sparkles } from "lucide-react";
 
 interface MonthLabel {
   name: string;
@@ -29,43 +30,17 @@ interface OSSProject {
 
 const OSS_PROJECTS: OSSProject[] = [
   {
-    title: "Intel OpenVINO",
-    repo: "openvinotoolkit/openvino",
-    repoUrl: "https://github.com/openvinotoolkit/openvino",
-    prUrl: "https://github.com/openvinotoolkit/openvino/pull/35005",
-    prNumber: 35005,
-    prTitle: "Add support for aten::fractional_max_pool2d in PyTorch frontend",
+    title: "ImageDiff",
+    repo: "sev-/ImageDiff",
+    repoUrl: "https://github.com/sev-/ImageDiff",
+    prUrl: "https://github.com/sev-/ImageDiff/pull/2",
+    prNumber: 2,
+    prTitle: "Add caching and pagination; display builds in increasing order",
     status: "Merged",
-    description: "Added operator translation and kernel mapping for fractional max pooling in Intel's flagship AI inference engine.",
-    language: "C++",
-    langColor: "#f34b7d",
-    stars: "8.1k",
-  },
-  {
-    title: "Graphite",
-    repo: "GraphiteEditor/Graphite",
-    repoUrl: "https://github.com/GraphiteEditor/Graphite",
-    prUrl: "https://github.com/GraphiteEditor/Graphite/pull/3555",
-    prNumber: 3555,
-    prTitle: "Fix Box Warp to treat multiple shapes as unified object & Alpha Multiply",
-    status: "Merged",
-    description: "Fixed Box Warp subpath transformations and corrected alpha channel multiplication for table fill rasterization.",
-    language: "Rust",
-    langColor: "#dea584",
-    stars: "11.2k",
-  },
-  {
-    title: "Apache Fory",
-    repo: "apache/fory",
-    repoUrl: "https://github.com/apache/fory",
-    prUrl: "https://github.com/apache/fory/pull/3422",
-    prNumber: 3422,
-    prTitle: "feat(c++): Forced the limits of max size",
-    status: "Merged",
-    description: "Implemented defensive size bounds checking in high-performance cross-language serialization primitives.",
-    language: "C++",
-    langColor: "#f34b7d",
-    stars: "3.4k",
+    description: "Added cached timeline ranges and paginated build listings, with builds sorted chronologically.",
+    language: "Python",
+    langColor: "#3572A5",
+    stars: "1",
   },
   {
     title: "rs-tiled",
@@ -394,34 +369,20 @@ export function GithubContributionsSticky() {
             {/* Circular Stacked Badges + Expand Toggle (Matches screenshot) */}
             <div className="flex items-center gap-2.5">
               <div className="flex items-center -space-x-1.5">
-                {/* 1. Green bolt circular badge (Supabase/Blitz style from screenshot) */}
+                {/* Tiled project icon */}
                 <div
-                  title="Turborepo / AI & High-Performance Tools"
-                  className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black border-2 border-[#FAF7EE] dark:border-[#12131a] flex items-center justify-center shadow-xs"
+                  title="Tiled"
+                  className="relative w-6 h-6 sm:w-7 sm:h-7 overflow-hidden rounded-full bg-white border-2 border-[#FAF7EE] dark:border-[#12131a] shadow-xs"
                 >
-                  <Zap className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
+                  <Image src="/oss-icons/tiled.png" alt="Tiled" width={28} height={28} className="h-full w-full object-cover" />
                 </div>
 
-                {/* 2. 'R' in circle badge (Rust / Raycast / rs-tiled) */}
+                {/* ScummVM project icon */}
                 <div
-                  title="Rust & Vector Graphics (Graphite, rs-tiled)"
-                  className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black border-2 border-[#FAF7EE] dark:border-[#12131a] flex items-center justify-center shadow-xs text-white font-mono font-bold text-[10px] sm:text-[11px]"
+                  title="ScummVM"
+                  className="relative w-6 h-6 sm:w-7 sm:h-7 overflow-hidden rounded-full bg-white border-2 border-[#FAF7EE] dark:border-[#12131a] shadow-xs"
                 >
-                  R
-                </div>
-
-                {/* 3. Boot / Linux / Intel OpenVINO Badge */}
-                <div
-                  title="Intel OpenVINO & Systems"
-                  className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white border-2 border-[#FAF7EE] dark:border-[#12131a] flex items-center justify-center shadow-xs text-neutral-900"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="w-3.5 h-3.5 fill-current"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M18.8 17.5c-.2-.6-.9-1.2-2.1-1.6-.3-.1-.5-.3-.7-.6-.2-.3-.2-.7-.1-1 .2-.6.4-1.3.4-2.1 0-2.5-1.9-4.7-4.3-4.7-2.4 0-4.3 2.2-4.3 4.7 0 .8.2 1.5.4 2.1.1.3.1.7-.1 1-.2.3-.4.5-.7.6-1.2.4-1.9 1-2.1 1.6-.2.6 0 1.2.5 1.7.5.4 1.3.7 2.3.8.3 0 .7 0 1-.1.4-.1.8-.3 1.2-.6.7.3 1.5.4 2.3.4s1.6-.1 2.3-.4c.4.3.8.5 1.2.6.3.1.7.1 1 .1 1-.1 1.8-.4 2.3-.8.5-.5.7-1.1.5-1.7z" />
-                  </svg>
+                  <Image src="/oss-icons/scummvm.png" alt="ScummVM" width={28} height={28} className="h-full w-full object-cover" />
                 </div>
               </div>
 
