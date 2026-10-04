@@ -44,11 +44,11 @@ const POSTERS: PosterItem[] = [
       opacity: 0.75,
     },
     mobile: {
-      topPercent: 13,
-      rightPx: 8,
-      rotation: -6,
-      widthPx: 58,
-      opacity: 0.82,
+      topPercent: 12,
+      rightPx: 4,
+      rotation: -8,
+      widthPx: 34,
+      opacity: 0.35,
     },
   },
   {
@@ -66,11 +66,11 @@ const POSTERS: PosterItem[] = [
       opacity: 0.85,
     },
     mobile: {
-      topPercent: 36,
-      rightPx: 6,
-      rotation: 3,
-      widthPx: 62,
-      opacity: 0.82,
+      topPercent: 35,
+      rightPx: 3,
+      rotation: 4,
+      widthPx: 36,
+      opacity: 0.35,
     },
   },
   {
@@ -88,11 +88,11 @@ const POSTERS: PosterItem[] = [
       opacity: 0.95,
     },
     mobile: {
-      topPercent: 59,
-      rightPx: 8,
-      rotation: -1.5,
-      widthPx: 70,
-      opacity: 0.85,
+      topPercent: 58,
+      rightPx: 4,
+      rotation: -3,
+      widthPx: 42,
+      opacity: 0.4,
     },
   },
   {
@@ -110,11 +110,11 @@ const POSTERS: PosterItem[] = [
       opacity: 0.95,
     },
     mobile: {
-      topPercent: 81,
-      rightPx: 6,
-      rotation: 2,
-      widthPx: 64,
-      opacity: 0.85,
+      topPercent: 80,
+      rightPx: 3,
+      rotation: 3,
+      widthPx: 36,
+      opacity: 0.4,
     },
   },
 ];
@@ -191,40 +191,35 @@ export function WallMotivationalPosters() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxPoster]);
 
-  // Clean up any legacy localStorage key from the studio version
-  useEffect(() => {
-    try {
-      localStorage.removeItem("portfolio_wall_posters_config_v2");
-    } catch {}
-  }, []);
-
   // Handle tap / click on a poster
-  const handleTap = useCallback((poster: PosterItem, e: React.MouseEvent) => {
+  const handleTap = useCallback((poster: PosterItem, e?: React.MouseEvent) => {
     playPaperTapSound();
 
-    const chars = ["✨", "★", "✦", "⚡", "•"];
-    const newSparkles: FloatingSparkle[] = Array.from({ length: 4 }, (_, i) => ({
-      id: Date.now() + i,
-      x: e.clientX + (Math.random() * 30 - 15),
-      y: e.clientY + (Math.random() * 24 - 12),
-      text: chars[Math.floor(Math.random() * chars.length)],
-    }));
+    if (e) {
+      const chars = ["✨", "★", "✦", "⚡", "•"];
+      const newSparkles: FloatingSparkle[] = Array.from({ length: 4 }, (_, i) => ({
+        id: Date.now() + i,
+        x: e.clientX + (Math.random() * 30 - 15),
+        y: e.clientY + (Math.random() * 24 - 12),
+        text: chars[Math.floor(Math.random() * chars.length)],
+      }));
 
-    setSparkles((prev) => [...prev, ...newSparkles]);
-    setTimeout(() => {
-      setSparkles((prev) => prev.filter((s) => !newSparkles.some((ns) => ns.id === s.id)));
-    }, 750);
+      setSparkles((prev) => [...prev, ...newSparkles]);
+      setTimeout(() => {
+        setSparkles((prev) => prev.filter((s) => !newSparkles.some((ns) => ns.id === s.id)));
+      }, 750);
+    }
 
     setLightboxPoster(poster);
   }, []);
 
-  // Helper to render tape fasteners
+  // Helper to render realistic washi tape fasteners
   const renderTape = (style: PosterItem["tapeStyle"], isMobile = false) => {
     if (style === "top-center") {
       return (
         <div
           className={`absolute ${
-            isMobile ? "-top-1.5 w-7 h-2.5" : "-top-2.5 w-10 h-3.5"
+            isMobile ? "-top-1 w-4 h-1.5" : "-top-2.5 w-10 h-3.5"
           } left-1/2 -translate-x-1/2 pointer-events-none z-20 transition-transform duration-300 group-hover/poster:scale-105`}
           style={{
             background: isDark ? "rgba(215, 180, 125, 0.32)" : "rgba(240, 222, 185, 0.85)",
@@ -243,7 +238,7 @@ export function WallMotivationalPosters() {
       return (
         <div
           className={`absolute ${
-            isMobile ? "-top-2 -left-2 w-6 h-2.5" : "-top-2.5 -left-2.5 w-9 h-3.5"
+            isMobile ? "-top-1 -left-1 w-4 h-1.5" : "-top-2.5 -left-2.5 w-9 h-3.5"
           } pointer-events-none z-20 -rotate-[35deg] transition-transform duration-300 group-hover/poster:scale-105`}
           style={{
             background: isDark ? "rgba(215, 180, 125, 0.32)" : "rgba(240, 222, 185, 0.85)",
@@ -261,7 +256,7 @@ export function WallMotivationalPosters() {
         <>
           <div
             className={`absolute ${
-              isMobile ? "-top-1.5 -left-1.5 w-5 h-2" : "-top-2 -left-2 w-7 h-3"
+              isMobile ? "-top-1 -left-1 w-3.5 h-1.5" : "-top-2 -left-2 w-7 h-3"
             } pointer-events-none z-20 -rotate-[38deg]`}
             style={{
               background: isDark ? "rgba(215, 180, 125, 0.3)" : "rgba(240, 222, 185, 0.85)",
@@ -271,7 +266,7 @@ export function WallMotivationalPosters() {
           />
           <div
             className={`absolute ${
-              isMobile ? "-top-1.5 -right-1.5 w-5 h-2" : "-top-2 -right-2 w-7 h-3"
+              isMobile ? "-top-1 -right-1 w-3.5 h-1.5" : "-top-2 -right-2 w-7 h-3"
             } pointer-events-none z-20 rotate-[38deg]`}
             style={{
               background: isDark ? "rgba(215, 180, 125, 0.3)" : "rgba(240, 222, 185, 0.85)",
@@ -287,7 +282,7 @@ export function WallMotivationalPosters() {
       return (
         <div
           className={`absolute ${
-            isMobile ? "-top-1.5 w-7 h-2.5" : "-top-2 w-10 h-3.5"
+            isMobile ? "-top-1 w-4 h-1.5" : "-top-2 w-10 h-3.5"
           } left-1/2 -translate-x-1/2 pointer-events-none z-20 rotate-[1.5deg]`}
           style={{
             background: isDark ? "rgba(180, 140, 95, 0.40)" : "rgba(205, 165, 120, 0.88)",
@@ -323,8 +318,8 @@ export function WallMotivationalPosters() {
       </div>
 
       {/* ========================================================
-          1. DESKTOP / LARGE DEVICES (Exact User Coordinates)
-          Fixed positions for medium & large screens (md+)
+          1. DESKTOP / LARGE SCREENS (md+)
+          Exact fixed coordinates pinned to the right wall
           ======================================================== */}
       <aside
         aria-label="Motivational Wall Gallery (Desktop)"
@@ -349,8 +344,7 @@ export function WallMotivationalPosters() {
                 onClick={(e) => handleTap(poster, e)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    playPaperTapSound();
-                    setLightboxPoster(poster);
+                    handleTap(poster);
                   }
                 }}
                 className="relative group/poster pointer-events-auto cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.06] active:scale-95 hover:opacity-100"
@@ -412,11 +406,12 @@ export function WallMotivationalPosters() {
       </aside>
 
       {/* ========================================================
-          2. MOBILE DEVICES (Fitted neatly onto the page)
-          Compact thumbnails docked along right margin (< md screens)
+          2. MOBILE SCREENS (< md)
+          Pinned along the right side with reduced size and subtle opacity
+          Hugs the edge as subtle watermark stamps, never obstructing content
           ======================================================== */}
       <aside
-        aria-label="Motivational Wall Gallery (Mobile)"
+        aria-label="Motivational Wall Gallery (Mobile Side)"
         className="md:hidden fixed inset-y-0 right-0 z-20 pointer-events-none select-none w-full overflow-hidden"
       >
         {POSTERS.map((poster) => {
@@ -429,7 +424,7 @@ export function WallMotivationalPosters() {
               style={{
                 top: `${cfg.topPercent}%`,
                 right: `${cfg.rightPx}px`,
-                zIndex: 22,
+                zIndex: 21,
               }}
             >
               <div
@@ -438,11 +433,10 @@ export function WallMotivationalPosters() {
                 onClick={(e) => handleTap(poster, e)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
-                    playPaperTapSound();
-                    setLightboxPoster(poster);
+                    handleTap(poster);
                   }
                 }}
-                className="relative group/poster pointer-events-auto cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 hover:opacity-100"
+                className="relative group/poster pointer-events-auto cursor-pointer transition-all duration-300 hover:scale-110 active:scale-95 hover:opacity-100"
                 style={{
                   width: `${cfg.widthPx}px`,
                   opacity: cfg.opacity,
@@ -453,21 +447,21 @@ export function WallMotivationalPosters() {
               >
                 {/* Photo frame */}
                 <div
-                  className="relative overflow-hidden rounded-xs p-0.5 transition-shadow duration-300"
+                  className="relative overflow-hidden rounded-2xs p-0.5 transition-shadow duration-300"
                   style={{
                     backgroundColor: isDark ? "#1c1917" : "#fefcf8",
                     border: isDark ? "1px solid rgba(255, 255, 255, 0.12)" : "1px solid rgba(0, 0, 0, 0.12)",
                     boxShadow: isDark
-                      ? "0 4px 12px rgba(0, 0, 0, 0.6)"
-                      : "0 4px 12px rgba(70, 45, 20, 0.15)",
+                      ? "0 2px 8px rgba(0, 0, 0, 0.45)"
+                      : "0 2px 8px rgba(70, 45, 20, 0.12)",
                   }}
                 >
                   <div className="relative w-full overflow-hidden rounded-2xs bg-neutral-900/10 dark:bg-white/5">
                     <Image
                       src={poster.src}
                       alt={poster.name}
-                      width={180}
-                      height={Math.round(180 / poster.aspectRatio)}
+                      width={120}
+                      height={Math.round(120 / poster.aspectRatio)}
                       priority
                       className="w-full h-auto object-cover block select-none pointer-events-none"
                       onError={(e) => {
@@ -480,7 +474,7 @@ export function WallMotivationalPosters() {
                   </div>
                 </div>
 
-                {/* Mobile tape fastener */}
+                {/* Mini Tape */}
                 {renderTape(poster.tapeStyle, true)}
               </div>
             </div>

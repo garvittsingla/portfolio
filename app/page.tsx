@@ -5,6 +5,7 @@ import { DotGridBackground } from "@/components/DotGridBackground";
 import { FloatingNavbar } from "@/components/FloatingNavbar";
 import { FloatingNotebookDoodles } from "@/components/FloatingNotebookDoodles";
 import { WallMotivationalPosters } from "@/components/WallMotivationalPosters";
+import { PencilCursor } from "@/components/PencilCursor";
 import { NotebookIntro } from "@/components/NotebookIntro";
 import { GithubContributionsSticky } from "@/components/GithubContributionsSticky";
 import { LeetCodeStats } from "@/components/LeetCodeStats";
@@ -20,8 +21,11 @@ export default function Home() {
       {/* Persistent floating notebook doodles on left side of viewport */}
       <FloatingNotebookDoodles />
 
-      {/* Subtle motivational posters & prints on right wall (Pinterest workspace aesthetic) */}
+      {/* Subtle motivational posters & prints on right wall */}
       <WallMotivationalPosters />
+
+      {/* Subtle interactive pencil trailing the cursor */}
+      <PencilCursor />
 
       {/* Top Navbar that shrinks into a floating glassmorphic pill on scroll */}
       <FloatingNavbar />
