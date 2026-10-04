@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import rough from "roughjs";
 import {
@@ -14,8 +14,6 @@ import {
   ExternalLink,
   GitPullRequest,
   Star,
-  RotateCcw,
-  Sparkles,
 } from "lucide-react";
 
 interface MonthLabel {
@@ -94,10 +92,9 @@ export function GithubContributionsSticky() {
   } | null>(null);
 
   const fillStyleMode = "cross-hatch";
-  const [seedOffset, setSeedOffset] = useState<number>(0);
+  const seedOffset = 0;
   const [filterLevel, setFilterLevel] = useState<number | null>(null);
   const [isOssExpanded, setIsOssExpanded] = useState<boolean>(false);
-  const [isResketching, setIsResketching] = useState<boolean>(false);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -134,23 +131,6 @@ export function GithubContributionsSticky() {
     }
   }, [data]);
 
-  // Audio flourish when re-sketching
-  const playSketchSound = useCallback(() => {
-    try {
-      const audio = new Audio("/pencil-flourish.wav");
-      audio.volume = 0.28;
-      audio.play().catch(() => {});
-    } catch {
-      // Audio playback might be restricted before first gesture
-    }
-  }, []);
-
-  const handleResketch = () => {
-    setIsResketching(true);
-    playSketchSound();
-    setSeedOffset((prev) => prev + 7);
-    setTimeout(() => setIsResketching(false), 450);
-  };
 
   // Group 371 days into 53 weeks (columns of 7 days) and detect month headers accurately
   const { weeks, monthLabels } = useMemo(() => {
@@ -548,28 +528,6 @@ export function GithubContributionsSticky() {
             </h3>
 
             <div className="flex items-center gap-2">
-              {/* Re-sketch Button (Triggers new Rough.js seeds + tactile pencil flourish audio) */}
-              <button
-                type="button"
-                onClick={handleResketch}
-                disabled={isResketching}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded-md
-                  text-[#4f3a25] dark:text-[#d8c6a8]
-                  bg-[#ecd8b0]/50 dark:bg-[#2c2217]/60
-                  hover:bg-[#e4cca0] dark:hover:bg-[#382b1c]
-                  border border-[#cfb686]/60 dark:border-[#523e2b]/80
-                  hover:border-[#9c7d4a] dark:hover:border-[#8f6e3c]
-                  cursor-pointer transition-all active:scale-95 shadow-2xs"
-                title="Re-randomize Rough.js seeds and re-sketch all handdrawn lines"
-              >
-                <RotateCcw
-                  className={`w-3 h-3 text-amber-700 dark:text-amber-400 transition-transform duration-500 ${
-                    isResketching ? "-rotate-180" : ""
-                  }`}
-                />
-                <span>Re-sketch</span>
-              </button>
-
               {/* Profile link */}
               <a
                 href="https://github.com/garvittsingla"
@@ -601,7 +559,7 @@ export function GithubContributionsSticky() {
                 <svg
                   viewBox={`0 0 ${TOTAL_SVG_WIDTH} ${TOTAL_SVG_HEIGHT}`}
                   className="w-full h-auto overflow-visible select-none"
-                  aria-label="Handdrawn GitHub Contribution Graph by Rough.js"
+                  aria-label="Handdrawn GitHub Contribution Graph"
                 >
                   {/* 1. Day of Week Labels along Left Margin (Mon, Wed, Fri) */}
                   <g className="font-mono text-[10px] fill-[#7d654c] dark:fill-[#9e886e] select-none">
@@ -986,10 +944,6 @@ export function GithubContributionsSticky() {
           {/* VINTAGE MARGIN NOTE AT FOOTER */}
           <div className="relative z-10 mt-3 pt-2 flex items-center justify-between text-[10px] font-handwriting text-[#83694f]/80 dark:text-[#a58e74]/70">
             <span>{"// 371 days charted on aged ledger parchment"}</span>
-            <span className="flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 opacity-60" />
-              <span>rough.js renderer</span>
-            </span>
           </div>
         </div>
       </div>

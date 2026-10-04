@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useSyncExternalStore } from "react";
 import Image from "next/image";
 
 interface Sparkle {
@@ -57,7 +57,11 @@ function playPencilTapSound() {
 }
 
 export function FloatingNotebookDoodles() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   // Sparkles and tap states for each doodle
   const [sparkles, setSparkles] = useState<{
@@ -81,7 +85,6 @@ export function FloatingNotebookDoodles() {
   });
 
   useEffect(() => {
-    setMounted(true);
     try {
       localStorage.removeItem("portfolio_doodles_custom_config");
     } catch {}

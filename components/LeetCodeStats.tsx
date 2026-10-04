@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, useRef, useCallback } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import rough from "roughjs";
-import { ExternalLink, Flame, Trophy, RotateCcw, Sparkles } from "lucide-react";
+import { ExternalLink, Flame, Trophy } from "lucide-react";
 import { useTheme } from "./ThemeProvider";
 
 const LEETCODE_USERNAME = "garvittsingla";
@@ -91,9 +91,8 @@ export function LeetCodeStats() {
   const [isLoading, setIsLoading] = useState(true);
 
   const fillStyleMode = "cross-hatch";
-  const [seedOffset, setSeedOffset] = useState<number>(0);
+  const seedOffset = 0;
   const [filterLevel, setFilterLevel] = useState<number | null>(null);
-  const [isResketching, setIsResketching] = useState<boolean>(false);
 
   const [hoveredCell, setHoveredCell] = useState<{
     cell: CalendarCell;
@@ -131,23 +130,6 @@ export function LeetCodeStats() {
     };
   }, []);
 
-  // Audio flourish when re-sketching
-  const playSketchSound = useCallback(() => {
-    try {
-      const audio = new Audio("/pencil-flourish.wav");
-      audio.volume = 0.28;
-      audio.play().catch(() => {});
-    } catch {
-      // Audio playback might be restricted before gesture
-    }
-  }, []);
-
-  const handleResketch = () => {
-    setIsResketching(true);
-    playSketchSound();
-    setSeedOffset((prev) => prev + 11);
-    setTimeout(() => setIsResketching(false), 450);
-  };
 
   const weeks = useMemo(() => {
     const today = new Date();
@@ -728,27 +710,6 @@ export function LeetCodeStats() {
                       <span className="text-[#cbb07d] dark:text-[#4d3a27]">·</span>
                       <span>{formatNumber(data.streak)} day streak</span>
                     </div>
-
-                    {/* Re-sketch Button */}
-                    <button
-                      type="button"
-                      onClick={handleResketch}
-                      disabled={isResketching}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono rounded-md
-                        text-[#4f3a25] dark:text-[#d8c6a8]
-                        bg-[#ecd8b0]/50 dark:bg-[#281f15]/70
-                        hover:bg-[#e4cca0] dark:hover:bg-[#382b1c]
-                        border border-[#cfb686]/60 dark:border-[#4d3a27]
-                        cursor-pointer transition-all active:scale-95 shadow-2xs"
-                      title="Re-randomize Rough.js seeds and re-sketch all handdrawn lines"
-                    >
-                      <RotateCcw
-                        className={`w-3 h-3 text-amber-700 dark:text-amber-400 transition-transform duration-500 ${
-                          isResketching ? "-rotate-180" : ""
-                        }`}
-                      />
-                      <span>Re-sketch</span>
-                    </button>
                   </div>
                 </div>
 
@@ -763,7 +724,7 @@ export function LeetCodeStats() {
                       <svg
                         viewBox={`0 0 ${TOTAL_SVG_WIDTH} ${TOTAL_SVG_HEIGHT}`}
                         className="w-full h-auto overflow-visible select-none"
-                        aria-label="Handdrawn LeetCode Submission Graph by Rough.js"
+                        aria-label="Handdrawn LeetCode Submission Graph"
                       >
                         {/* Day of Week Labels */}
                         <g className="font-mono text-[10px] select-none">
@@ -1145,10 +1106,6 @@ export function LeetCodeStats() {
           {/* VINTAGE MARGIN NOTE AT FOOTER */}
           <div className="relative z-10 mt-3 pt-2 flex items-center justify-between text-[10px] font-handwriting text-[#83694f]/80 dark:text-[#a58e74]/70">
             <span>{"// leetcode solved stats & contests on aged ledger parchment"}</span>
-            <span className="flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 opacity-60" />
-              <span>rough.js renderer</span>
-            </span>
           </div>
         </div>
       </div>

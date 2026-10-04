@@ -143,52 +143,29 @@ body {
   animation: doodle-sparkle-burst 0.75s ease-out forwards;
 }
 
-.achievement-cord { stroke: #7a7160; opacity: .8; }
-.achievement-cord-shadow { stroke: rgba(0,0,0,.1); }
-.dark .achievement-cord { stroke: #a6a099; opacity: .7; }
-.dark .achievement-cord-shadow { stroke: rgba(0,0,0,.55); }
-.rope-light-halo { fill: #ffd878; opacity: .28; filter: blur(4px); animation: rope-light-glow 2.8s ease-in-out infinite alternate; animation-delay: var(--light-delay); }
-.rope-light-bulb { fill: #ffe9a8; filter: drop-shadow(0 0 3px rgba(255,218,124,.95)); animation: rope-light-glow 2.8s ease-in-out infinite alternate; animation-delay: var(--light-delay); }
-.dark .rope-light-halo { fill: #ffca61; opacity: .38; }
-.dark .rope-light-bulb { fill: #ffe5a0; filter: drop-shadow(0 0 4px rgba(255,194,91,1)); }
-@keyframes rope-light-glow { from { opacity: .55; } to { opacity: 1; } }
-.achievement-pin {
-  background: linear-gradient(90deg, rgba(0,0,0,.12), rgba(255,255,255,.9) 38%, rgba(0,0,0,.15));
-  box-shadow: 0 1px 2px rgba(0,0,0,.18);
-  transform-origin: top center;
+/* Fairy lights blinking on hanging garland */
+@keyframes fairy-blink-glow {
+  0%, 100% {
+    opacity: 0.96;
+    transform: scale(1);
+    filter: drop-shadow(0 0 5px var(--glow-color, rgba(251, 191, 36, 0.75)));
+  }
+  50% {
+    opacity: 0.28;
+    transform: scale(0.85);
+    filter: drop-shadow(0 0 1px var(--glow-color, rgba(251, 191, 36, 0.2)));
+  }
 }
-.achievement-hanger { transform: rotate(var(--card-tilt)); transform-origin: top center; animation: photo-hang 7.5s cubic-bezier(.45,0,.55,1) infinite; animation-delay: var(--card-delay); will-change: transform; }
-.achievement-hanger:nth-child(2) { animation-duration: 4.3s; }
-.achievement-hanger:nth-child(3) { animation-duration: 4.6s; }
-.polaroid {
-  transform-origin: 50% -20px;
-  border: 1px solid rgba(110,90,55,.16);
-  border-radius: 2px;
-  box-shadow: 0 8px 18px rgba(0,0,0,.14), 0 2px 4px rgba(0,0,0,.08);
-  transition: box-shadow .25s ease, filter .25s ease;
-  perspective: 800px;
+
+.fairy-light-bulb {
+  animation: fairy-blink-glow 2.4s ease-in-out infinite alternate;
+  transform-origin: center;
 }
-.polaroid:hover { box-shadow: 0 13px 25px rgba(0,0,0,.18), 0 3px 6px rgba(0,0,0,.1); }
-.polaroid-face { backface-visibility: hidden; transition: transform .78s cubic-bezier(.22,.75,.25,1), opacity .5s ease; }
-.polaroid-front { transform: rotateY(0); }
-.polaroid-back { transform: rotateY(180deg); opacity: 0; }
-.polaroid-flipped .polaroid-front { transform: rotateY(-180deg); opacity: 0; }
-.polaroid-flipped .polaroid-back { transform: rotateY(0); opacity: 1; }
-.achievement-swing { animation: photo-swing 1.4s cubic-bezier(.22,.61,.36,1) both !important; }
-@keyframes photo-hang {
-  0%, 100% { transform: rotate(var(--card-tilt)); }
-  50% { transform: rotate(calc(var(--card-tilt) + .8deg)); }
-}
-@keyframes photo-swing {
-  0% { transform: rotate(calc(var(--card-tilt) + var(--pull-angle))); }
-  18% { transform: rotate(calc(var(--card-tilt) + var(--swing-back))); }
-  38% { transform: rotate(calc(var(--card-tilt) + var(--swing-forward))); }
-  57% { transform: rotate(calc(var(--card-tilt) + var(--swing-back-small))); }
-  76% { transform: rotate(calc(var(--card-tilt) + var(--swing-forward-small))); }
-  100% { transform: rotate(var(--card-tilt)); }
-}
+
 @media (prefers-reduced-motion: reduce) {
-  .achievement-hanger, .achievement-swing { animation: none !important; }
-  .polaroid-face { transition-duration: 1ms; }
-  .rope-light-halo, .rope-light-bulb { animation: none !important; }
+  .fairy-light-bulb {
+    animation: none !important;
+    opacity: 0.85;
+  }
 }
+
