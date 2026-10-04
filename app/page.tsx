@@ -11,6 +11,8 @@ import { GithubContributionsSticky } from "@/components/GithubContributionsStick
 import { LeetCodeStats } from "@/components/LeetCodeStats";
 import { AchievementsHanging } from "@/components/AchievementsHanging";
 import { ExperienceSection } from "@/components/ExperienceSection";
+import { WritingsSection } from "@/components/WritingsSection";
+import { FooterSection } from "@/components/FooterSection";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
 export default function Home() {
@@ -46,6 +48,11 @@ export default function Home() {
           <AchievementsHanging />
         </ScrollReveal>
 
+        {/* Writings & Blogs Section */}
+        <ScrollReveal delay={60}>
+          <WritingsSection />
+        </ScrollReveal>
+
         {/* GitHub Contribution Sticky Note Component */}
         <ScrollReveal delay={60}>
           <div id="activity">
@@ -56,6 +63,9 @@ export default function Home() {
         <ScrollReveal delay={60}>
           <LeetCodeStats />
         </ScrollReveal>
+
+        {/* Footer with Alex Hormozi quote & socials */}
+        <FooterSection />
       </main>
     </div>
   );

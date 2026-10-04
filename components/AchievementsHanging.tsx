@@ -366,9 +366,7 @@ export function AchievementsHanging() {
             wins & hackathons
           </h2>
         </div>
-        {/*<span className="hidden -rotate-2 font-handwriting text-xs text-neutral-400 dark:text-neutral-500 sm:inline">
-          hanging fairy lights ✨
-        </span>*/}
+      
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
