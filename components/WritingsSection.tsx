@@ -23,9 +23,22 @@ interface BlogItem {
   likes?: number;
   views?: number;
   xUrl?: string;
+  githubUrl?: string;
 }
 
 const INITIAL_FALLBACK_BLOGS: BlogItem[] = [
+  {
+    slug: "http-server-in-cpp",
+    title: "Building a Custom HTTP Server from Scratch in C++",
+    description:
+      "Demystifying low-level UNIX network sockets, object-oriented socket abstractions, and crafting a minimal HTTP/1.1 web server in modern C++.",
+    date: "Sep 17, 2026",
+    tags: ["C++", "Networking", "Systems", "Sockets"],
+    readTime: "6 min read",
+    likes: 64,
+    views: 920,
+    githubUrl: "https://github.com/garvittsingla/http-server-cpp",
+  },
   {
     slug: "you-suck-at-subnetting",
     title: "You suck at Subnetting",
@@ -121,6 +134,9 @@ export function WritingsSection() {
     };
   }, []);
 
+  // Only display the latest 3 blogs on the main portfolio page
+  const latestBlogs = blogs.slice(0, 3);
+
   return (
     <section
       id="writings"
@@ -149,7 +165,7 @@ export function WritingsSection() {
               hover:border-neutral-800 dark:hover:border-neutral-200
               transition-all shadow-2xs group/btn"
           >
-            <span>all blogs</span>
+            <span>all {blogs.length} blogs</span>
             <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
           </Link>
 
@@ -195,19 +211,19 @@ export function WritingsSection() {
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400/80 inline-block" />
             <span className="w-2.5 h-2.5 rounded-full bg-green-400/80 inline-block" />
             <span className="ml-2 font-mono text-[11px] text-neutral-500 dark:text-neutral-400">
-              blogs/ directory (markdown engine)
+              blogs/ directory · recent 3 field notes
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 font-handwriting text-xs text-neutral-500 dark:text-neutral-400">
             <BookOpen className="w-3.5 h-3.5 text-blue-500" />
-            <span>{blogs.length} articles</span>
+            <span>recent 3 of {blogs.length} articles</span>
           </div>
         </div>
 
         {/* Articles List Rows */}
         <div className="relative z-10 divide-y divide-dashed divide-neutral-300/80 dark:divide-neutral-700/80">
-          {blogs.map((blog) => (
+          {latestBlogs.map((blog) => (
             <div
               key={blog.slug}
               className="group relative block px-5 py-5 sm:px-7 sm:py-6 transition-colors hover:bg-white/60 dark:hover:bg-white/[.035]"
@@ -283,6 +299,19 @@ export function WritingsSection() {
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                     </Link>
 
+                    {blog.githubUrl && (
+                      <a
+                        href={blog.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors hidden sm:inline-flex items-center gap-1"
+                        title="View source repository on GitHub"
+                      >
+                        <span>GitHub</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+
                     {blog.xUrl && (
                       <a
                         href={blog.xUrl}
@@ -314,14 +343,14 @@ export function WritingsSection() {
         {/* Notebook bottom footer bar with "browse all blogs" */}
         <div className="relative z-10 px-5 py-3.5 bg-[#f5efe0] dark:bg-[#161821] border-t border-[#e5decb] dark:border-neutral-800/80 flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400">
           <span className="font-handwriting">
-            {loading ? "loading markdown files..." : "synced from /blogs markdown directory"}
+            {loading ? "loading markdown files..." : `showing latest 3 notes · all ${blogs.length} on blogs page`}
           </span>
 
           <Link
             href="/blogs"
             className="font-mono text-[11px] font-semibold text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-sky-400 underline underline-offset-4 transition-colors flex items-center gap-1 group/lib"
           >
-            <span>browse all blogs</span>
+            <span>browse all blogs ({blogs.length})</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover/lib:translate-x-0.5 transition-transform" />
           </Link>
         </div>

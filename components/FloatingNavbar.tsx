@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { ThemeToggleSwitch } from "./ThemeToggleSwitch";
 
 export function FloatingNavbar() {
@@ -61,25 +62,37 @@ export function FloatingNavbar() {
         `}
       >
         {/* Navigation Links */}
-        <nav className="flex items-center gap-3 sm:gap-5 text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400">
-          <a
-            href="#experience"
+        <nav className="flex items-center gap-2.5 sm:gap-4 text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400">
+          <Link
+            href="/"
+            className="hover:text-neutral-950 dark:hover:text-white transition-colors"
+          >
+            home
+          </Link>
+          <Link
+            href="/#experience"
             className="hover:text-neutral-950 dark:hover:text-white transition-colors"
           >
             work
-          </a>
-          <a
-            href="#achievements"
+          </Link>
+          <Link
+            href="/#achievements"
             className="hover:text-neutral-950 dark:hover:text-white transition-colors"
           >
             wins
-          </a>
-          <a
-            href="#writings"
+          </Link>
+          <Link
+            href="/#writings"
             className="hover:text-neutral-950 dark:hover:text-white transition-colors"
           >
             writings
-          </a>
+          </Link>
+          <Link
+            href="/blogs"
+            className="hover:text-neutral-950 dark:hover:text-white transition-colors hidden xs:inline"
+          >
+            blogs
+          </Link>
         </nav>
 
         {/* Right: Local time & Theme Toggle Switch */}

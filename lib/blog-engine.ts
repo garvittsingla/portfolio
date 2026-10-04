@@ -9,6 +9,7 @@ export interface BlogFrontmatter {
   readTime: string;
   author: string;
   xUrl?: string;
+  githubUrl?: string;
   likes?: number;
   views?: number;
 }
@@ -81,6 +82,7 @@ export function parseFrontmatter(rawContent: string): {
     else if (key === "readTime") frontmatter.readTime = val;
     else if (key === "author") frontmatter.author = val;
     else if (key === "xUrl") frontmatter.xUrl = val;
+    else if (key === "githubUrl") frontmatter.githubUrl = val;
     else if (key === "likes") frontmatter.likes = parseInt(val, 10) || 0;
     else if (key === "views") frontmatter.views = parseInt(val, 10) || 0;
     else if (key === "tags") {
@@ -188,6 +190,7 @@ export async function getAllBlogs(): Promise<BlogPostMeta[]> {
             readTime: post.readTime,
             author: post.author,
             xUrl: post.xUrl,
+            githubUrl: post.githubUrl,
             likes: post.likes,
             views: post.views,
           });

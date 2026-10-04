@@ -141,17 +141,31 @@ export default async function BlogPostPage({ params }: PageProps) {
                 </span>
               </div>
 
-              {post.xUrl && (
-                <a
-                  href={post.xUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-300/80 dark:border-neutral-700 text-[11px] hover:border-neutral-800 dark:hover:border-neutral-200 text-neutral-700 dark:text-neutral-300 transition-colors"
-                >
-                  <span>view thread on X</span>
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
+              <div className="flex items-center gap-2">
+                {post.githubUrl && (
+                  <a
+                    href={post.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-300/80 dark:border-neutral-700 text-[11px] hover:border-neutral-800 dark:hover:border-neutral-200 text-neutral-700 dark:text-neutral-300 transition-colors"
+                  >
+                    <span>source on GitHub</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+
+                {post.xUrl && (
+                  <a
+                    href={post.xUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-neutral-300/80 dark:border-neutral-700 text-[11px] hover:border-neutral-800 dark:hover:border-neutral-200 text-neutral-700 dark:text-neutral-300 transition-colors"
+                  >
+                    <span>view thread on X</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                )}
+              </div>
             </div>
           </header>
 

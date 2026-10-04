@@ -48,11 +48,6 @@ export default function Home() {
           <AchievementsHanging />
         </ScrollReveal>
 
-        {/* Writings & Blogs Section */}
-        <ScrollReveal delay={60}>
-          <WritingsSection />
-        </ScrollReveal>
-
         {/* GitHub Contribution Sticky Note Component */}
         <ScrollReveal delay={60}>
           <div id="activity">
@@ -62,6 +57,11 @@ export default function Home() {
 
         <ScrollReveal delay={60}>
           <LeetCodeStats />
+        </ScrollReveal>
+
+        {/* Writings & Blogs Section (after LeetCode) */}
+        <ScrollReveal delay={60}>
+          <WritingsSection />
         </ScrollReveal>
 
         {/* Footer with Alex Hormozi quote & socials */}

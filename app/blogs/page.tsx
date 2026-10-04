@@ -101,8 +101,9 @@ export default async function BlogsIndexPage() {
                     <div className="flex-1 min-w-0">
                       {/* Meta badges */}
                       <div className="flex flex-wrap items-center gap-2.5 mb-2 font-mono text-[11px] text-neutral-500 dark:text-neutral-400">
-                        <span className="inline-flex items-center gap-1">
-                          <Calendar className="w-3 h-3 text-neutral-400" />
+                        {/* Archival written date badge */}
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#efe7d2] dark:bg-[#1c1e28] border border-[#ded3bc] dark:border-neutral-700/80 font-medium text-neutral-800 dark:text-neutral-200">
+                          <Calendar className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                           <span>{blog.date}</span>
                         </span>
 
@@ -154,6 +155,19 @@ export default async function BlogsIndexPage() {
                           <span>read full article</span>
                           <ArrowUpRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                         </Link>
+
+                        {blog.githubUrl && (
+                          <a
+                            href={blog.githubUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors flex items-center gap-1"
+                            title="View source on GitHub"
+                          >
+                            <span>GitHub</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
 
                         {blog.xUrl && (
                           <a
