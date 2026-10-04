@@ -71,7 +71,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
   return (
     <div className="relative min-h-screen flex flex-col selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-neutral-950 overflow-x-hidden">
-      <DotGridBackground />
+      <DotGridBackground linesInDark />
       <FloatingNavbar />
 
       <main className="w-full flex-1 pt-[14vh] sm:pt-[16vh] pb-20">
@@ -89,21 +89,21 @@ export default async function BlogPostPage({ params }: PageProps) {
               <span>all blogs</span>
             </Link>
 
-            <span className="font-handwriting text-xs text-neutral-400 dark:text-neutral-500">
+            <span className="font-handwriting text-xs text-neutral-400 dark:text-neutral-400">
               {post.readTime}
             </span>
           </nav>
 
           {/* Post Header Card */}
-          <header className="mb-10 sm:mb-12 pb-8 border-b border-dashed border-[#e2d8c0] dark:border-neutral-800">
+          <header className="mb-10 sm:mb-12 pb-8 border-b border-dashed border-[#e2d8c0] dark:border-neutral-800/80">
             {/* Tags row */}
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap items-center gap-2 mb-4 font-mono text-xs">
-                <Tag className="w-3 h-3 text-neutral-400" />
+                <Tag className="w-3 h-3 text-neutral-400 dark:text-neutral-400" />
                 {post.tags.map((t) => (
                   <span
                     key={t}
-                    className="px-2.5 py-0.5 rounded-full border border-neutral-300/80 dark:border-neutral-700/80 text-[11px] text-neutral-600 dark:text-neutral-300 bg-[#faf6ea]/80 dark:bg-neutral-800/60"
+                    className="px-2.5 py-0.5 rounded-full border border-neutral-300/80 dark:border-neutral-800 text-[11px] text-neutral-600 dark:text-neutral-300 bg-[#faf6ea]/80 dark:bg-neutral-900/80"
                   >
                     {t}
                   </span>
@@ -112,27 +112,27 @@ export default async function BlogPostPage({ params }: PageProps) {
             )}
 
             {/* Title */}
-            <h1 className="font-sans text-2.5xl sm:text-3.5xl md:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-neutral-50 leading-[1.2]">
+            <h1 className="font-sans text-2.5xl sm:text-3.5xl md:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white leading-[1.25]">
               {post.title}
             </h1>
 
             {/* Subtitle / Description */}
             {post.description && (
-              <p className="mt-3.5 text-base sm:text-lg leading-relaxed text-neutral-600 dark:text-neutral-300 font-normal">
+              <p className="mt-4 text-base sm:text-lg leading-relaxed text-neutral-600 dark:text-[#e4e5eb] font-normal">
                 {post.description}
               </p>
             )}
 
             {/* Metadata Bar */}
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pt-5 border-t border-neutral-200/80 dark:border-neutral-800 font-mono text-xs text-neutral-500 dark:text-neutral-400">
+            <div className="mt-6 flex flex-wrap items-center justify-between gap-4 pt-5 border-t border-neutral-200/80 dark:border-neutral-800/80 font-mono text-xs text-neutral-500 dark:text-neutral-400">
               <div className="flex items-center gap-3">
                 <span className="inline-flex items-center gap-1.5">
-                  <Calendar className="w-3.5 h-3.5" />
+                  <Calendar className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-400" />
                   <span>{post.date}</span>
                 </span>
                 <span>·</span>
                 <span className="inline-flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5" />
+                  <Clock className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-400" />
                   <span>{post.readTime}</span>
                 </span>
                 <span>·</span>
@@ -173,16 +173,20 @@ export default async function BlogPostPage({ params }: PageProps) {
           {post.headings && post.headings.length >= 2 && (
             <aside
               aria-label="Table of Contents"
-              className="mb-10 p-5 rounded-2xl border border-[#e5decb] dark:border-neutral-800 bg-[#faf6ea]/60 dark:bg-[#121319]/60"
+              className="mb-10 p-5 rounded-2xl border border-[#e5decb] dark:border-neutral-800 bg-[#faf6ea]/60 dark:bg-[#101118]/80 shadow-xs"
             >
-              <p className="font-mono text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-2.5">
+              <p className="font-mono text-[11px] uppercase tracking-wider text-neutral-400 dark:text-neutral-400 mb-2.5 font-medium">
                 contents ↴
               </p>
               <ul className="space-y-1.5 text-xs sm:text-[13px] font-sans">
                 {post.headings.map((h) => (
                   <li
                     key={h.id}
-                    className={h.level === 3 ? "pl-4 text-neutral-500 dark:text-neutral-400" : "text-neutral-700 dark:text-neutral-300 font-medium"}
+                    className={
+                      h.level === 3
+                        ? "pl-4 text-neutral-500 dark:text-neutral-400"
+                        : "text-neutral-700 dark:text-neutral-200 font-medium"
+                    }
                   >
                     <a
                       href={`#${h.id}`}
@@ -202,8 +206,8 @@ export default async function BlogPostPage({ params }: PageProps) {
           </div>
 
           {/* Post Footer & Author Signature */}
-          <div className="mt-14 pt-8 border-t border-dashed border-[#e2d8c0] dark:border-neutral-800">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl border border-[#e5decb] dark:border-neutral-800 bg-[#faf6ea]/80 dark:bg-[#121319]/80">
+          <div className="mt-14 pt-8 border-t border-dashed border-[#e2d8c0] dark:border-neutral-800/80">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl border border-[#e5decb] dark:border-neutral-800 bg-[#faf6ea]/80 dark:bg-[#101118]/80">
               <div>
                 <p className="font-handwriting text-base text-neutral-800 dark:text-neutral-200">
                   thanks for reading · garvit singla
@@ -237,13 +241,13 @@ export default async function BlogPostPage({ params }: PageProps) {
               {prevBlog ? (
                 <Link
                   href={`/blog/${prevBlog.slug}`}
-                  className="group flex flex-col justify-between p-4 rounded-xl border border-neutral-300/80 dark:border-neutral-800 hover:border-neutral-500 dark:hover:border-neutral-600 transition-colors"
+                  className="group flex flex-col justify-between p-4 rounded-xl border border-neutral-300/80 dark:border-neutral-800 hover:border-neutral-500 dark:hover:border-neutral-700 transition-colors"
                 >
                   <span className="font-mono text-[11px] text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 flex items-center gap-1">
                     <ArrowLeft className="w-3 h-3 group-hover:-translate-x-0.5 transition-transform" />
                     <span>previous post</span>
                   </span>
-                  <span className="mt-2 font-sans text-sm font-semibold text-neutral-800 dark:text-neutral-200 line-clamp-1">
+                  <span className="mt-2 font-sans text-sm font-semibold text-neutral-800 dark:text-neutral-100 line-clamp-1">
                     {prevBlog.title}
                   </span>
                 </Link>
@@ -254,13 +258,13 @@ export default async function BlogPostPage({ params }: PageProps) {
               {nextBlog ? (
                 <Link
                   href={`/blog/${nextBlog.slug}`}
-                  className="group flex flex-col justify-between p-4 rounded-xl border border-neutral-300/80 dark:border-neutral-800 hover:border-neutral-500 dark:hover:border-neutral-600 transition-colors text-right"
+                  className="group flex flex-col justify-between p-4 rounded-xl border border-neutral-300/80 dark:border-neutral-800 hover:border-neutral-500 dark:hover:border-neutral-700 transition-colors text-right"
                 >
                   <span className="font-mono text-[11px] text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-300 flex items-center justify-end gap-1">
                     <span>next post</span>
                     <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
                   </span>
-                  <span className="mt-2 font-sans text-sm font-semibold text-neutral-800 dark:text-neutral-200 line-clamp-1">
+                  <span className="mt-2 font-sans text-sm font-semibold text-neutral-800 dark:text-neutral-100 line-clamp-1">
                     {nextBlog.title}
                   </span>
                 </Link>

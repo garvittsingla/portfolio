@@ -19,7 +19,7 @@ export default async function BlogsIndexPage() {
 
   return (
     <div className="relative min-h-screen flex flex-col selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-neutral-950 overflow-x-hidden">
-      <DotGridBackground />
+      <DotGridBackground linesInDark />
       <FloatingNavbar />
 
       <main className="w-full flex-1 pt-[14vh] sm:pt-[16vh] pb-16">

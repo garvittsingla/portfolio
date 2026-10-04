@@ -9,9 +9,86 @@ interface ThemeToggleSwitchProps {
   size?: "sm" | "md" | "lg";
 }
 
+let sharedAudioCtx: AudioContext | null = null;
+
+function playThemeTick(isNextDark: boolean) {
+  if (typeof window === "undefined") return;
+
+  try {
+    const AudioContextClass =
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext })
+        .webkitAudioContext;
+
+    if (!AudioContextClass) {
+      const audio = new Audio(isNextDark ? "/toggle-tick-down.wav" : "/toggle-tick.wav");
+      audio.volume = 0.2;
+      audio.play().catch(() => {});
+      return;
+    }
+
+    if (!sharedAudioCtx || sharedAudioCtx.state === "closed") {
+      sharedAudioCtx = new AudioContextClass();
+    }
+    if (sharedAudioCtx.state === "suspended") {
+      sharedAudioCtx.resume().catch(() => {});
+    }
+
+    const ctx = sharedAudioCtx;
+    const now = ctx.currentTime;
+
+    // Primary gentle tone
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    const startFreq = isNextDark ? 920 : 1240;
+    const endFreq = isNextDark ? 280 : 380;
+
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(startFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.022);
+
+    // Subtle volume (decaying in 24ms)
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.linearRampToValueAtTime(0.065, now + 0.002);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.024);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.025);
+
+    // Micro tactile snap transient (9ms)
+    const snap = ctx.createOscillator();
+    const snapGain = ctx.createGain();
+
+    snap.type = "triangle";
+    snap.frequency.setValueAtTime(isNextDark ? 1600 : 2100, now);
+    snap.frequency.exponentialRampToValueAtTime(400, now + 0.008);
+
+    snapGain.gain.setValueAtTime(0.0001, now);
+    snapGain.gain.linearRampToValueAtTime(0.035, now + 0.001);
+    snapGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.008);
+
+    snap.connect(snapGain);
+    snapGain.connect(ctx.destination);
+
+    snap.start(now);
+    snap.stop(now + 0.009);
+  } catch {
+    // Fail silently if browser audio permissions block
+  }
+}
+
 export function ThemeToggleSwitch({ showLabel = false, size = "md" }: ThemeToggleSwitchProps) {
   const { theme, toggleTheme, mounted } = useTheme();
   const isDark = theme === "dark";
+
+  const handleToggle = () => {
+    playThemeTick(!isDark);
+    toggleTheme();
+  };
 
   const sizeClasses = {
     sm: {
@@ -47,7 +124,7 @@ export function ThemeToggleSwitch({ showLabel = false, size = "md" }: ThemeToggl
         role="switch"
         aria-checked={isDark}
         aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-        onClick={toggleTheme}
+        onClick={handleToggle}
         className={`
           group relative inline-flex shrink-0 cursor-pointer items-center rounded-full
           border transition-all duration-500 ease-out focus:outline-none focus-visible:ring-2
