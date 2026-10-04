@@ -4,6 +4,35 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 
+// Subtle notebook highlighter marker stroke for key phrases
+function Highlight({
+  children,
+  color = "yellow",
+  tilt = -0.5,
+}: {
+  children: React.ReactNode;
+  color?: "yellow" | "sky" | "orange" | "mint";
+  tilt?: number;
+}) {
+  const bgStyles = {
+    yellow: "bg-amber-200/65 dark:bg-amber-400/20 text-neutral-900 dark:text-neutral-100",
+    sky: "bg-sky-200/65 dark:bg-sky-400/20 text-neutral-900 dark:text-neutral-100",
+    orange: "bg-orange-200/65 dark:bg-orange-400/20 text-neutral-900 dark:text-neutral-100",
+    mint: "bg-emerald-200/65 dark:bg-emerald-400/20 text-neutral-900 dark:text-neutral-100",
+  };
+
+  return (
+    <span className="group/hl relative inline-block font-semibold transition-colors mx-0.5">
+      <span
+        aria-hidden="true"
+        className={`absolute inset-x-[-3px] top-[1px] bottom-[1px] -z-10 rounded-[2px] pointer-events-none transition-transform duration-200 group-hover/hl:scale-105 ${bgStyles[color]}`}
+        style={{ transform: `rotate(${tilt}deg)` }}
+      />
+      {children}
+    </span>
+  );
+}
+
 export function NotebookIntro() {
   const prefix = "hey i am ";
   const fullName = "garvit singla";
@@ -106,6 +135,7 @@ export function NotebookIntro() {
   };
 
   // Unified handwriting typewriter animation
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const runHandwritingAnimation = useCallback((startSoundFromGesture = false) => {
     // 1. Clear any active timeouts or intervals
     if (startTimeoutRef.current) {
@@ -387,20 +417,48 @@ export function NotebookIntro() {
           )}
         </div>
 
-        {/* 3-4 lines intro */}
+        {/* 3-4 lines intro with highlighted key words */}
         <div
           className={`pt-2 w-full max-w-sm sm:max-w-md space-y-1.5 text-center sm:text-left transition-all duration-700 delay-200 ${
             isTypingDone ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
           }`}
         >
           <p className="text-[11.5px] sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
-            Software engineer obsessed with low-level systems, C/C++, Rust, and graphics.
+            Software engineer obsessed with{" "}
+            <Highlight color="yellow" tilt={-0.6}>
+              low-level systems
+            </Highlight>
+            ,{" "}
+            <Highlight color="sky" tilt={0.5}>
+              C/C++
+            </Highlight>
+            ,{" "}
+            <Highlight color="orange" tilt={-0.4}>
+              Rust
+            </Highlight>
+            , and{" "}
+            <Highlight color="mint" tilt={0.6}>
+              graphics
+            </Highlight>
+            .
           </p>
           <p className="text-[11.5px] sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
-            Exploring foundational computing from network protocols to memory management.
+            Exploring foundational computing from{" "}
+            <Highlight color="sky" tilt={-0.5}>
+              network protocols
+            </Highlight>{" "}
+            to{" "}
+            <Highlight color="mint" tilt={0.4}>
+              memory management
+            </Highlight>
+            .
           </p>
           <p className="text-[11.5px] sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
-            Building performant tools and understanding computers from the metal up.
+            Building performant tools and understanding computers{" "}
+            <Highlight color="yellow" tilt={-0.5}>
+              from the metal up
+            </Highlight>
+            .
           </p>
         </div>
 
