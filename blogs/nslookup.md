@@ -55,5 +55,33 @@ some of them are google's DNS `8.8.8.8` and cloudflare's DNS `1.1.1.1` or provid
 I used nslookup and wireshark to actually make DNS requests and understand the process.
 ![query](https://github.com/garvittsingla/nslookup/raw/main/docs/dnsPacketStructure.png)
 
+## 4. DNS header structure
 
+```c
+struct dns_question_format{
+    uint16_t qtype; // type of question
+    uint16_t qclass; // class of question
+    char qname[256]; // name of question
+};
+struct dns_resource_record_format{
+    uint16_t type; // type of resource record
+    uint16_t class; // class of resource record
+    uint32_t ttl; // time to live
+    uint16_t rdlength; // length of rdata
+    char rdata[256]; // rdata of resource record
+};
+struct dns_request_format{
+    uint16_t id; // for a application for multiple queries
+    uint16_t flags; // some flags that indicate the type of query
+    uint16_t qdcount; // number of questions
+    uint16_t ancount; // number of answers
+    uint16_t nscount; // number of name servers
+    uint16_t arcount; // number of additional records
+    struct dns_question_format questions[1]; // array of questions
+    struct dns_resource_record_format answers[1]; // array of answers
+    struct dns_resource_record_format name_servers[1]; // array of name servers
+    struct dns_resource_record_format additional_records[1]; // array of additional records
+};
+
+```
 
