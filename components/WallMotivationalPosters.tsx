@@ -331,7 +331,7 @@ export function WallMotivationalPosters() {
           return (
             <div
               key={`desktop-${poster.id}`}
-              className="fixed transition-transform duration-300 ease-out"
+              className="fixed"
               style={{
                 top: `${cfg.topPercent}%`,
                 right: `${cfg.rightPx}px`,
@@ -347,7 +347,7 @@ export function WallMotivationalPosters() {
                     handleTap(poster);
                   }
                 }}
-                className="relative group/poster pointer-events-auto cursor-pointer transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.06] active:scale-95 hover:opacity-100"
+                className="relative group/poster pointer-events-auto cursor-pointer transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.06] active:scale-95 hover:opacity-100"
                 style={{
                   width: `${cfg.widthPx}px`,
                   opacity: cfg.opacity,
@@ -420,7 +420,7 @@ export function WallMotivationalPosters() {
           return (
             <div
               key={`mobile-${poster.id}`}
-              className="fixed transition-transform duration-300 ease-out"
+              className="fixed"
               style={{
                 top: `${cfg.topPercent}%`,
                 right: `${cfg.rightPx}px`,
@@ -436,7 +436,7 @@ export function WallMotivationalPosters() {
                     handleTap(poster);
                   }
                 }}
-                className="relative group/poster pointer-events-auto cursor-pointer transition-all duration-300 hover:scale-110 active:scale-95 hover:opacity-100"
+                className="relative group/poster pointer-events-auto cursor-pointer transition-transform duration-300 hover:scale-110 active:scale-95 hover:opacity-100"
                 style={{
                   width: `${cfg.widthPx}px`,
                   opacity: cfg.opacity,

@@ -4,29 +4,36 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { RotateCcw, Volume2, VolumeX } from "lucide-react";
 
-// Subtle notebook highlighter marker stroke for key phrases
+// Subtle notebook highlighter marker stroke for key phrases with scroll-driven sweep animation
 function Highlight({
   children,
   color = "yellow",
   tilt = -0.5,
+  delay = 0,
+  active = true,
 }: {
   children: React.ReactNode;
   color?: "yellow" | "sky" | "orange" | "mint";
   tilt?: number;
+  delay?: number;
+  active?: boolean;
 }) {
   const bgStyles = {
-    yellow: "bg-amber-200/65 dark:bg-amber-400/20 text-neutral-900 dark:text-neutral-100",
-    sky: "bg-sky-200/65 dark:bg-sky-400/20 text-neutral-900 dark:text-neutral-100",
-    orange: "bg-orange-200/65 dark:bg-orange-400/20 text-neutral-900 dark:text-neutral-100",
-    mint: "bg-emerald-200/65 dark:bg-emerald-400/20 text-neutral-900 dark:text-neutral-100",
+    yellow: "bg-amber-200/70 dark:bg-amber-400/22 text-neutral-900 dark:text-neutral-100",
+    sky: "bg-sky-200/70 dark:bg-sky-400/22 text-neutral-900 dark:text-neutral-100",
+    orange: "bg-orange-200/70 dark:bg-orange-400/22 text-neutral-900 dark:text-neutral-100",
+    mint: "bg-emerald-200/70 dark:bg-emerald-400/22 text-neutral-900 dark:text-neutral-100",
   };
 
   return (
     <span className="group/hl relative inline-block font-semibold transition-colors mx-0.5">
       <span
         aria-hidden="true"
-        className={`absolute inset-x-[-3px] top-[1px] bottom-[1px] -z-10 rounded-[2px] pointer-events-none transition-transform duration-200 group-hover/hl:scale-105 ${bgStyles[color]}`}
-        style={{ transform: `rotate(${tilt}deg)` }}
+        className={`absolute inset-x-[-3px] top-[1px] bottom-[1px] -z-10 rounded-[2px] pointer-events-none origin-left transition-transform duration-600 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover/hl:scale-105 ${bgStyles[color]}`}
+        style={{
+          transform: active ? `rotate(${tilt}deg) scaleX(1)` : `rotate(${tilt}deg) scaleX(0)`,
+          transitionDelay: `${delay}ms`,
+        }}
       />
       {children}
     </span>
@@ -43,7 +50,35 @@ export function NotebookIntro() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isAudioBlocked, setIsAudioBlocked] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [inView, setInView] = useState(true);
+  const introSectionRef = useRef<HTMLElement | null>(null);
   const TARGET_VOLUME = 0.4; // 40% volume as requested
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+        }
+      },
+      { threshold: 0.15 }
+    );
+
+    if (introSectionRef.current) {
+      observer.observe(introSectionRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      observer.disconnect();
+    };
+  }, []);
 
   const sketchAudioRef = useRef<HTMLAudioElement | null>(null);
   const fadeIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -244,6 +279,7 @@ export function NotebookIntro() {
 
   return (
     <section
+      ref={introSectionRef}
       aria-label="Notebook Intro"
       className="w-full max-w-2xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 px-4 sm:px-6 select-none"
     >
@@ -257,14 +293,17 @@ export function NotebookIntro() {
             shadow-xs rotate-[-2deg] pointer-events-none"
         />
 
-        {/* Drawing container with organic paper tilt */}
+        {/* Drawing container with organic paper tilt & subtle scroll parallax */}
         <div
           onClick={() => runHandwritingAnimation(true)}
           data-handwriting-replay
           title="Click to replay writing & sound"
+          style={{
+            transform: `translateY(${Math.min(scrollY * 0.08, 20)}px) rotate(${2.5 - Math.min(scrollY * 0.012, 3)}deg)`,
+          }}
           className={`
-            group relative p-1 transition-all duration-500 ease-out
-            rotate-[2.5deg] hover:rotate-0 hover:scale-105 cursor-pointer
+            group relative p-1 transition-all duration-300 ease-out
+            hover:rotate-0 hover:scale-105 cursor-pointer
             ${imageLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"}
           `}
         >
@@ -425,37 +464,37 @@ export function NotebookIntro() {
         >
           <p className="text-[11.5px] sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
             Software engineer obsessed with{" "}
-            <Highlight color="yellow" tilt={-0.6}>
+            <Highlight color="yellow" tilt={-0.6} delay={100} active={isTypingDone && inView}>
               low-level systems
             </Highlight>
             ,{" "}
-            <Highlight color="sky" tilt={0.5}>
+            <Highlight color="sky" tilt={0.5} delay={250} active={isTypingDone && inView}>
               C/C++
             </Highlight>
             ,{" "}
-            <Highlight color="orange" tilt={-0.4}>
+            <Highlight color="orange" tilt={-0.4} delay={400} active={isTypingDone && inView}>
               Rust
             </Highlight>
             , and{" "}
-            <Highlight color="mint" tilt={0.6}>
+            <Highlight color="mint" tilt={0.6} delay={550} active={isTypingDone && inView}>
               graphics
             </Highlight>
             .
           </p>
           <p className="text-[11.5px] sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
             Exploring foundational computing from{" "}
-            <Highlight color="sky" tilt={-0.5}>
+            <Highlight color="sky" tilt={-0.5} delay={700} active={isTypingDone && inView}>
               network protocols
             </Highlight>{" "}
             to{" "}
-            <Highlight color="mint" tilt={0.4}>
+            <Highlight color="mint" tilt={0.4} delay={850} active={isTypingDone && inView}>
               memory management
             </Highlight>
             .
           </p>
           <p className="text-[11.5px] sm:text-[13px] text-neutral-600 dark:text-neutral-300 font-mono leading-relaxed">
             Building performant tools and understanding computers{" "}
-            <Highlight color="yellow" tilt={-0.5}>
+            <Highlight color="yellow" tilt={-0.5} delay={1000} active={isTypingDone && inView}>
               from the metal up
             </Highlight>
             .

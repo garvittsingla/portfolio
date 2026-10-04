@@ -11,6 +11,7 @@ import { GithubContributionsSticky } from "@/components/GithubContributionsStick
 import { LeetCodeStats } from "@/components/LeetCodeStats";
 import { AchievementsHanging } from "@/components/AchievementsHanging";
 import { ExperienceSection } from "@/components/ExperienceSection";
+import { ScrollReveal } from "@/components/ScrollReveal";
 
 export default function Home() {
   return (
@@ -37,16 +38,24 @@ export default function Home() {
           <NotebookIntro />
         </div>
 
-        <ExperienceSection />
+        <ScrollReveal delay={40}>
+          <ExperienceSection />
+        </ScrollReveal>
 
-        <AchievementsHanging />
+        <ScrollReveal delay={60}>
+          <AchievementsHanging />
+        </ScrollReveal>
 
         {/* GitHub Contribution Sticky Note Component */}
-        <div id="activity">
-          <GithubContributionsSticky />
-        </div>
+        <ScrollReveal delay={60}>
+          <div id="activity">
+            <GithubContributionsSticky />
+          </div>
+        </ScrollReveal>
 
-        <LeetCodeStats />
+        <ScrollReveal delay={60}>
+          <LeetCodeStats />
+        </ScrollReveal>
       </main>
     </div>
   );
