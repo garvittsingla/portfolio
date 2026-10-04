@@ -93,6 +93,12 @@ export function FloatingNavbar() {
           >
             blogs
           </Link>
+          <Link
+            href="/shelf"
+            className="hover:text-neutral-950 dark:hover:text-white transition-colors hidden sm:inline"
+          >
+            shelf
+          </Link>
         </nav>
 
         {/* Right: Local time & Theme Toggle Switch */}
