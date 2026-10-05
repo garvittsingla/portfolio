@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { DotGridBackground } from "@/components/DotGridBackground";
 import { FloatingNavbar } from "@/components/FloatingNavbar";
 import { FloatingNotebookDoodles } from "@/components/FloatingNotebookDoodles";
@@ -16,6 +16,10 @@ import { FooterSection } from "@/components/FooterSection";
 import { ScrollReveal } from "@/components/ScrollReveal";
 
 export default function Home() {
+  useEffect(() => {
+    console.log("hey i am redeployed and prod working fine");
+  }, []);
+
   return (
     <div className="relative min-h-screen flex flex-col selection:bg-neutral-900 selection:text-white dark:selection:bg-white dark:selection:text-neutral-950 overflow-x-hidden">
       {/* Background vector dot grid / lined paper with theme transitions */}
