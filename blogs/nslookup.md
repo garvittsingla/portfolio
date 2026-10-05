@@ -2,7 +2,7 @@
 # ─────────────────────────────────────────────────────────────
 # BLOG FRONTMATTER (Metadata)
 # ─────────────────────────────────────────────────────────────
-title: "implmenting nslookup"
+title: "implementing nslookup"
 description: "A short 1-2 sentence description explaining how DNS queries work, UDP sockets, and parsing raw DNS wire format packets."
 date: "Oct 4, 2026"
 tags: ["Networking", "DNS", "C", "Sockets", "nslookup"]
@@ -16,7 +16,7 @@ githubUrl: "https://github.com/garvittsingla/nslookup"
 ---
 
 There is a very famous inteview question, what happens when you type google.com in your search bar
-The first and the most obvious jargon that comes to mind is the unmighty DNS. So i just thought about it and read something about it , and it just open my brain wires of the concepts of networking which made me choose this.
+The first and the most obvious jargon is DNS. DNS is a translation system which converts human readable domain names to computer understandable IP addresses.
 
 I started with the concept of DNS and how it works.
 then came to know about UNIX utilities like `nslookup` and `dig`.
@@ -84,4 +84,19 @@ struct dns_request_format{
 };
 
 ```
+
+DNS header is of 12 bytes and the content inside it are ~500 bytes.
+
+## 5. Structuring the project
+I don't only want to implement DNS but to write code in more maintainable, production level manner so that it is easier to read and modify later.
+
+For this project as the external dependency are very less so a simple MakeFile is enough
+
+I have made separate modules for each work in project i.e. All dns related stuff at one place, networking stuff etc.
+
+All the top level file imports are itself in the header file but will surely make a structure to include only 1 header file
+
+
+
+
 
