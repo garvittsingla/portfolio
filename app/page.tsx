@@ -11,6 +11,7 @@ import { GithubContributionsSticky } from "@/components/GithubContributionsStick
 import { LeetCodeStats } from "@/components/LeetCodeStats";
 import { AchievementsHanging } from "@/components/AchievementsHanging";
 import { ExperienceSection } from "@/components/ExperienceSection";
+import { ProjectsSection } from "@/components/ProjectsSection";
 import { WritingsSection } from "@/components/WritingsSection";
 import { FooterSection } from "@/components/FooterSection";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -46,6 +47,10 @@ export default function Home() {
 
         <ScrollReveal delay={40}>
           <ExperienceSection />
+        </ScrollReveal>
+
+        <ScrollReveal delay={50}>
+          <ProjectsSection />
         </ScrollReveal>
 
         <ScrollReveal delay={60}>
