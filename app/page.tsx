@@ -60,15 +60,19 @@ export default function Home() {
         </ScrollReveal>
 
         {/* GitHub Contribution Sticky Note Component */}
+
+        <ScrollReveal delay={60}>
+          <LeetCodeStats />
+        </ScrollReveal>
+
+        
         <ScrollReveal delay={60}>
           <div id="activity">
             <GithubContributionsSticky />
           </div>
         </ScrollReveal>
 
-        <ScrollReveal delay={60}>
-          <LeetCodeStats />
-        </ScrollReveal>
+        
 
         {/* Writings & Blogs Section (after LeetCode) */}
         <ScrollReveal delay={60}>
