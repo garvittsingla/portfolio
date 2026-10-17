@@ -45,14 +45,16 @@ export default function Home() {
           <NotebookIntro />
         </div>
 
-        <ScrollReveal delay={40}>
-          <ExperienceSection />
-        </ScrollReveal>
-
         <ScrollReveal delay={50}>
           <ProjectsSection />
         </ScrollReveal>
 
+        
+        <ScrollReveal delay={40}>
+          <ExperienceSection />
+        </ScrollReveal>
+
+        
         <ScrollReveal delay={60}>
           <AchievementsHanging />
         </ScrollReveal>
