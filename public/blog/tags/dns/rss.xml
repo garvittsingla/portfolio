@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Garvit Singla - DNS</title>
+      <link>/blog</link>
+      <description>Systems programming, network architecture, and engineering thoughts by Garvit Singla.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="/blog/tags/dns/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Sun, 04 Oct 2026 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>Implementing nslookup from scratch</title>
+          <pubDate>Sun, 04 Oct 2026 00:00:00 +0000</pubDate>
+          <author>Garvit Singla</author>
+          <link>/blog/nslookup/</link>
+          <guid>/blog/nslookup/</guid>
+          <description xml:base="/blog/nslookup/">&lt;p&gt;There is a very famous inteview question, what happens when you type google.com in your search bar
+The first and the most obvious jargon is DNS. DNS is a translation system which converts human readable domain names to computer understandable IP addresses.&lt;/p&gt;
+&lt;p&gt;I started with the concept of DNS and how it works.
+then came to know about UNIX utilities like &lt;code&gt;nslookup&lt;/code&gt; and &lt;code&gt;dig&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;This blog is whole about my learning and building nslookup from scratch.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&quot;1-intro-and-understanding-10-sept-2026&quot;&gt;1. Intro and understanding (10 sept 2026)&lt;/h2&gt;
+&lt;p&gt;I started with reading about DNS headers and the DNS query process.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;DNS is the Domain Name System, a hierarchical naming system for computers and services on the Internet.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;DNS is based on UDP sockets but , if there is a big DNS query, it is split into multiple packets and transmitted with the help of TCP.&lt;/p&gt;
+&lt;h2 id=&quot;2-understanding-dns-query-process-11-sept-2026&quot;&gt;2. Understanding DNS query process (11 sept 2026)&lt;/h2&gt;
+&lt;p&gt;Next thing was to understand what is exactly DNS query process.
+For that we have to understand &lt;strong&gt;Types of DNS servers&lt;/strong&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Root DNS servers&lt;/strong&gt;: The first level of DNS servers that are responsible for resolving the top-level domain (TLD) names.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;TLD DNS servers&lt;/strong&gt;: The second level of DNS servers that are responsible for resolving the second-level domain (SLD) names.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Authoritative DNS servers&lt;/strong&gt;: The third level of DNS servers that are responsible for resolving the domain names.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Recursive DNS servers&lt;/strong&gt;: The fourth level of DNS servers that are responsible for resolving the domain names.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;if you want more detail refer : &lt;a rel=&quot;external&quot; href=&quot;https://www.cloudflare.com/learning/dns/dns-server-types/&quot;&gt;Cloudflare docs&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;So we are just quering the Recursive DNS server and not recursively finding the authoritative DNS servers.
+some of them are google’s DNS &lt;code&gt;8.8.8.8&lt;/code&gt; and cloudflare’s DNS &lt;code&gt;1.1.1.1&lt;/code&gt; or provided by your ISP.&lt;/p&gt;
+&lt;h2 id=&quot;3-making-dns-request-yourself-13-sept-2026&quot;&gt;3. Making DNS request yourself (13 sept 2026)&lt;/h2&gt;
+&lt;p&gt;I used nslookup and wireshark to actually make DNS requests and understand the process.
+&lt;img src=&quot;https://github.com/garvittsingla/nslookup/raw/main/docs/dnsPacketStructure.png&quot; alt=&quot;query&quot; /&gt;&lt;/p&gt;
+&lt;h2 id=&quot;4-dns-header-structure&quot;&gt;4. DNS header structure&lt;/h2&gt;
+&lt;pre class=&quot;giallo z-l-code z-d-code&quot; &gt;&lt;code data-lang=&quot;c&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;struct&lt;/span&gt;&lt;span&gt; dns_question_format&lt;/span&gt;&lt;span&gt;{&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; qtype&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; type of question&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; qclass&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; class of question&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    char&lt;/span&gt;&lt;span&gt; qname&lt;/span&gt;&lt;span&gt;[&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt;256&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; name of question&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;}&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;struct&lt;/span&gt;&lt;span&gt; dns_resource_record_format&lt;/span&gt;&lt;span&gt;{&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; type&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; type of resource record&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; class&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; class of resource record&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint32_t&lt;/span&gt;&lt;span&gt; ttl&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; time to live&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; rdlength&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; length of rdata&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    char&lt;/span&gt;&lt;span&gt; rdata&lt;/span&gt;&lt;span&gt;[&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt;256&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; rdata of resource record&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;}&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;struct&lt;/span&gt;&lt;span&gt; dns_request_format&lt;/span&gt;&lt;span&gt;{&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; id&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; for a application for multiple queries&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; flags&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; some flags that indicate the type of query&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; qdcount&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; number of questions&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; ancount&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; number of answers&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; nscount&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; number of name servers&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    uint16_t&lt;/span&gt;&lt;span&gt; arcount&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; number of additional records&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    struct&lt;/span&gt;&lt;span&gt; dns_question_format &lt;/span&gt;&lt;span&gt;questions&lt;/span&gt;&lt;span&gt;[&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt;1&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; array of questions&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    struct&lt;/span&gt;&lt;span&gt; dns_resource_record_format &lt;/span&gt;&lt;span&gt;answers&lt;/span&gt;&lt;span&gt;[&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt;1&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; array of answers&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    struct&lt;/span&gt;&lt;span&gt; dns_resource_record_format &lt;/span&gt;&lt;span&gt;name_servers&lt;/span&gt;&lt;span&gt;[&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt;1&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; array of name servers&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-3 z-l-b z-d-6 z-d-b&quot;&gt;    struct&lt;/span&gt;&lt;span&gt; dns_resource_record_format &lt;/span&gt;&lt;span&gt;additional_records&lt;/span&gt;&lt;span&gt;[&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt;1&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; //&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; array of additional records&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;}&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;DNS header is of 12 bytes and the content inside it are ~500 bytes.&lt;/p&gt;
+&lt;h2 id=&quot;5-structuring-the-project&quot;&gt;5. Structuring the project&lt;/h2&gt;
+&lt;p&gt;I don’t only want to implement DNS but to write code in more maintainable, production level manner so that it is easier to read and modify later.&lt;/p&gt;
+&lt;p&gt;For this project as the external dependency are very less so a simple MakeFile is enough&lt;/p&gt;
+&lt;p&gt;I have made separate modules for each work in project i.e. All dns related stuff at one place, networking stuff etc.&lt;/p&gt;
+&lt;p&gt;All the top level file imports are itself in the header file but will surely make a structure to include only 1 header file&lt;/p&gt;
+</description>
+      </item>
+    </channel>
+</rss>

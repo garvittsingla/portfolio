@@ -382,13 +382,13 @@ export function ProjectsSection() {
             {/* Action Links */}
             <div className="mt-5 pt-3 border-t border-dashed border-neutral-300/80 dark:border-neutral-800 flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Link
-                  href="/blog/nslookup"
+                <a
+                  href="/blog/nslookup/"
                   className="inline-flex items-center gap-1 font-mono text-xs font-semibold text-sky-600 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300 transition-colors"
                 >
                   <span>read blog</span>
                   <ArrowUpRight className="w-3 h-3" />
-                </Link>
+                </a>
                 <a
                   href="https://github.com/garvittsingla/nslookup"
                   target="_blank"

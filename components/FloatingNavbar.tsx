@@ -93,12 +93,12 @@ export function FloatingNavbar() {
           >
             writings
           </Link>
-          <Link
-            href="/blogs"
+          <a
+            href="/blog/"
             className="hover:text-neutral-950 dark:hover:text-white transition-colors hidden xs:inline"
           >
             blogs
-          </Link>
+          </a>
           <Link
             href="/shelf"
             className="hover:text-neutral-950 dark:hover:text-white transition-colors hidden sm:inline"

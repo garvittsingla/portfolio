@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build:zola": "cd zola && zola build --output-dir ../public/blog --force",
+    "build": "(which zola > /dev/null 2>&1 && npm run build:zola || echo 'Using pre-built Zola static files') && next build",
     "start": "next start",
     "lint": "eslint"
   },

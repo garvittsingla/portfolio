@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+      <title>Garvit Singla - Automation</title>
+      <link>/blog</link>
+      <description>Systems programming, network architecture, and engineering thoughts by Garvit Singla.</description>
+      <generator>Zola</generator>
+      <language>en</language>
+      <atom:link href="/blog/tags/automation/rss.xml" rel="self" type="application/rss+xml"/>
+      <lastBuildDate>Mon, 18 May 2026 00:00:00 +0000</lastBuildDate>
+      <item>
+          <title>GitHub Actions for dummies</title>
+          <pubDate>Mon, 18 May 2026 00:00:00 +0000</pubDate>
+          <author>Garvit Singla</author>
+          <link>/blog/github-actions-for-dummies/</link>
+          <guid>/blog/github-actions-for-dummies/</guid>
+          <description xml:base="/blog/github-actions-for-dummies/">&lt;p&gt;Have you ever wondered how tech teams manage to push code into production ten times a day without setting everything on fire?&lt;/p&gt;
+&lt;p&gt;How do they ensure thousands of unit tests run, linters pass, Docker containers build, and staging deployments trigger automatically—the exact moment a pull request is merged?&lt;/p&gt;
+&lt;p&gt;The magic behind this is &lt;strong&gt;Continuous Integration &amp;amp; Continuous Deployment (CI/CD)&lt;/strong&gt;, and &lt;strong&gt;GitHub Actions&lt;/strong&gt; is the cleanest tool to master it.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&quot;the-mental-model-what-is-github-actions&quot;&gt;The Mental Model: What is GitHub Actions?&lt;/h2&gt;
+&lt;p&gt;Think of GitHub Actions as a free, ephemeral cloud computer (a runner) that spins up in an isolated sandbox, executes whatever terminal commands you specify, and then disappears.&lt;/p&gt;
+&lt;p&gt;There are only &lt;strong&gt;4 core concepts&lt;/strong&gt; you need to understand:&lt;/p&gt;
+&lt;pre class=&quot;giallo z-l-code z-d-code&quot; &gt;&lt;code data-lang=&quot;plain&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;[Event / Trigger]  -&amp;gt;  [Workflow file (.github/workflows/*.yml)]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;                              |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;                     +--------+--------+&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;                     |                 |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;                  [Job 1]           [Job 2]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;                     |                 |&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;                  [Steps]           [Steps]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;                  - Checkout        - Run Build&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;                  - Run Tests       - Deploy&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Workflow&lt;/strong&gt;: The YAML configuration file residing in &lt;code&gt;.github/workflows/&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Event (Trigger)&lt;/strong&gt;: What kicks off the workflow (&lt;code&gt;push&lt;/code&gt;, &lt;code&gt;pull_request&lt;/code&gt;, &lt;code&gt;schedule&lt;/code&gt;, or manual button &lt;code&gt;workflow_dispatch&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Job&lt;/strong&gt;: A set of steps executed on the same virtual machine (e.g. &lt;code&gt;ubuntu-latest&lt;/code&gt;, &lt;code&gt;macos-latest&lt;/code&gt;, &lt;code&gt;windows-latest&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Step&lt;/strong&gt;: An individual task—either running a shell command (&lt;code&gt;run: npm test&lt;/code&gt;) or using a pre-packaged community action (&lt;code&gt;uses: actions/checkout@v4&lt;/code&gt;).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr /&gt;
+&lt;h2 id=&quot;writing-your-first-workflow-in-60-seconds&quot;&gt;Writing Your First Workflow in 60 Seconds&lt;/h2&gt;
+&lt;p&gt;Create a file in your repository: &lt;code&gt;.github/workflows/test.yml&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;giallo z-l-code z-d-code&quot; &gt;&lt;code data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;n&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ame&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; T&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;est and Lint Suite&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt;#&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; 1. Trigger when code is pushed to main or opened in a PR&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-7 z-d-7&quot;&gt;on&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;  p&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ush&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;    b&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ranches&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span&gt; [&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;ain&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;  p&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ull_request&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;    b&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ranches&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span&gt; [&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;m&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;ain&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;obs&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;  v&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;erify&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;    n&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ame&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; L&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;int &amp;amp; Run Unit Tests&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;    r&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;uns-on&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; u&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;buntu-latest&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;    s&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;teps&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt;      #&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; Step 1: Clone the repository onto the runner&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt; n&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ame&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; C&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;heckout Code&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;        u&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ses&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; a&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;ctions/checkout@v4&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt;      #&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; Step 2: Install Node runtime&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt; n&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ame&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; S&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;etup Node.js&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;        u&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ses&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; a&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;ctions/setup-node@v4&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;        w&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ith&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;          n&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ode-version&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt; 20&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;          c&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ache&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; &amp;#39;&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;npm&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;&amp;#39;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt;      #&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; Step 3: Install dependencies&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt; n&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ame&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; I&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;nstall dependencies&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;        r&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;un&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; n&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;pm ci&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt;      #&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; Step 4: Run linter&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt; n&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ame&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; R&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;un ESLint&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;        r&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;un&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; n&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;pm run lint&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt;      #&lt;/span&gt;&lt;span class=&quot;z-l-6 z-l-i z-d-3 z-d-i&quot;&gt; Step 5: Execute test suite&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;      -&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt; n&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ame&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; R&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;un Test Suite&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;        r&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;un&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; n&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;pm test&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That’s all it takes! Every time anyone submits a pull request, GitHub spins up an Ubuntu VM, pulls down your repository, installs packages, runs your checks, and reports a green checkmark or red cross directly next to their commit.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&quot;3-pro-tips-for-production-pipelines&quot;&gt;3 Pro-Tips for Production Pipelines&lt;/h2&gt;
+&lt;h3 id=&quot;1-matrix-builds&quot;&gt;1. Matrix Builds&lt;/h3&gt;
+&lt;p&gt;Test across multiple platforms or language versions simultaneously:&lt;/p&gt;
+&lt;pre class=&quot;giallo z-l-code z-d-code&quot; &gt;&lt;code data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;s&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;trategy&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;  m&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;atrix&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;    o&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;s&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span&gt; [&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;u&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;buntu-latest&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; m&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;acos-latest&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;    n&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ode-version&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span&gt; [&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt;18&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt; 20&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;span class=&quot;z-l-9 z-d-9&quot;&gt; 22&lt;/span&gt;&lt;span&gt;]&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&quot;2-protect-secrets&quot;&gt;2. Protect Secrets&lt;/h3&gt;
+&lt;p&gt;Never commit &lt;code&gt;.env&lt;/code&gt; files or API tokens! Store them under &lt;strong&gt;Repository Settings &amp;gt; Secrets and variables &amp;gt; Actions&lt;/strong&gt;, and inject them cleanly:&lt;/p&gt;
+&lt;pre class=&quot;giallo z-l-code z-d-code&quot; &gt;&lt;code data-lang=&quot;yaml&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;e&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;nv&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;  D&lt;/span&gt;&lt;span class=&quot;z-l-1 z-d-1&quot;&gt;ATABASE_URL&lt;/span&gt;&lt;span&gt;:&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt; $&lt;/span&gt;&lt;span class=&quot;z-l-2 z-d-2&quot;&gt;{{ secrets.PROD_DATABASE_URL }}&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&quot;3-fail-fast-cache&quot;&gt;3. Fail Fast &amp;amp; Cache&lt;/h3&gt;
+&lt;p&gt;Always enable dependency caching (&lt;code&gt;cache: &#39;npm&#39;&lt;/code&gt; or &lt;code&gt;cache: &#39;cargo&#39;&lt;/code&gt;). It can turn a 5-minute build into a 25-second breeze.&lt;/p&gt;
+&lt;p&gt;Automate the boring stuff so you can focus on building what matters.&lt;/p&gt;
+</description>
+      </item>
+    </channel>
+</rss>

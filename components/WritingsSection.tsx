@@ -155,8 +155,8 @@ export function WritingsSection() {
         </div>
 
         <div className="flex items-center gap-2.5">
-          <Link
-            href="/blogs"
+          <a
+            href="/blog/"
             className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono
               text-neutral-700 dark:text-neutral-300
               hover:text-black dark:hover:text-white
@@ -167,7 +167,7 @@ export function WritingsSection() {
           >
             <span>all {blogs.length} blogs</span>
             <ArrowRight className="w-3 h-3 group-hover/btn:translate-x-0.5 transition-transform" />
-          </Link>
+          </a>
 
           <a
             href="https://x.com/garvitsinglaa"
@@ -264,11 +264,11 @@ export function WritingsSection() {
                   </div>
 
                   {/* Article Title: Links to /blog/[slug] */}
-                  <Link href={`/blog/${blog.slug}`} className="inline-block">
+                  <a href={`/blog/${blog.slug}/`} className="inline-block">
                     <h3 className="relative inline-block font-sans text-base sm:text-lg font-bold text-neutral-900 dark:text-neutral-100 group-hover:text-blue-600 dark:group-hover:text-sky-400 transition-colors">
                       {blog.title}
                     </h3>
-                  </Link>
+                  </a>
 
                   {/* Article Preview Excerpt */}
                   <p className="mt-2 text-xs sm:text-[13px] leading-relaxed text-neutral-600 dark:text-neutral-300 line-clamp-2">
@@ -291,13 +291,13 @@ export function WritingsSection() {
                       </span>
                     )}
 
-                    <Link
-                      href={`/blog/${blog.slug}`}
+                    <a
+                      href={`/blog/${blog.slug}/`}
                       className="font-handwriting text-xs text-neutral-700 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-sky-400 transition-colors inline-flex items-center gap-1"
                     >
                       <span>read article</span>
                       <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
-                    </Link>
+                    </a>
 
                     {blog.githubUrl && (
                       <a
@@ -328,13 +328,13 @@ export function WritingsSection() {
                 </div>
 
                 {/* External arrow button -> opens /blog/[slug] */}
-                <Link
-                  href={`/blog/${blog.slug}`}
+                <a
+                  href={`/blog/${blog.slug}/`}
                   className="self-end sm:self-center shrink-0 flex items-center justify-center w-8 h-8 rounded-full border border-neutral-300/70 dark:border-neutral-700/70 bg-white/60 dark:bg-neutral-800/50 text-neutral-500 dark:text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white group-hover:border-neutral-900 dark:group-hover:border-white transition-all group-hover:scale-105"
                   aria-label={`Read ${blog.title}`}
                 >
                   <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                </Link>
+                </a>
               </div>
             </div>
           ))}
@@ -346,13 +346,13 @@ export function WritingsSection() {
             {loading ? "loading markdown files..." : `showing latest 3 notes · all ${blogs.length} on blogs page`}
           </span>
 
-          <Link
-            href="/blogs"
+          <a
+            href="/blog/"
             className="font-mono text-[11px] font-semibold text-neutral-800 dark:text-neutral-200 hover:text-blue-600 dark:hover:text-sky-400 underline underline-offset-4 transition-colors flex items-center gap-1 group/lib"
           >
             <span>browse all blogs ({blogs.length})</span>
             <ArrowRight className="w-3.5 h-3.5 group-hover/lib:translate-x-0.5 transition-transform" />
-          </Link>
+          </a>
         </div>
       </div>
     </section>

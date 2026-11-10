@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Garvit Singla - Life</title>
+    <subtitle>Systems programming, network architecture, and engineering thoughts by Garvit Singla.</subtitle>
+    <link rel="self" type="application/atom+xml" href="/blog/tags/life/atom.xml"/>
+    <link rel="alternate" type="text/html" href="/blog"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-05-20T00:00:00+00:00</updated>
+    <id>/blog/tags/life/atom.xml</id>
+    <entry xml:lang="en">
+        <title>How to actually win in life (Real world experiment)</title>
+        <published>2026-05-20T00:00:00+00:00</published>
+        <updated>2026-05-20T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            Garvit Singla
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="/blog/how-to-actually-win-in-life/"/>
+        <id>/blog/how-to-actually-win-in-life/</id>
+        
+        <content type="html" xml:base="/blog/how-to-actually-win-in-life/">&lt;p&gt;In a world governed by cutthroat competition and pure self-interest, how does cooperation ever take root?&lt;/p&gt;
+&lt;p&gt;Why would any rational individual choose to cooperate if a selfish betrayer can exploit them?&lt;/p&gt;
+&lt;p&gt;The answer isn’t wishful thinking or moral preaching. It was proven by a real-world computer science experiment conducted by political scientist &lt;strong&gt;Robert Axelrod&lt;/strong&gt; in the 1980s.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&quot;axelrod-s-tournament-the-setup&quot;&gt;Axelrod’s Tournament: The Setup&lt;/h2&gt;
+&lt;p&gt;Axelrod invited the world’s leading game theorists, mathematicians, economists, and computer scientists to submit computer programs to play the &lt;strong&gt;Iterated Prisoner’s Dilemma&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;In each round between two players:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If both &lt;strong&gt;Cooperate&lt;/strong&gt;, both receive &lt;strong&gt;3 points&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;If one &lt;strong&gt;Defects&lt;/strong&gt; while the other Cooperates, the defector gets &lt;strong&gt;5 points&lt;/strong&gt; (temptation) while the sucker gets &lt;strong&gt;0 points&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;If both &lt;strong&gt;Defect&lt;/strong&gt;, both receive &lt;strong&gt;1 point&lt;/strong&gt; (punishment).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre class=&quot;giallo z-l-code z-d-code&quot; &gt;&lt;code data-lang=&quot;plain&quot;&gt;&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;                  Player B: Cooperate    Player B: Defect&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;Player A: Cooperate     (3, 3)                (0, 5)&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;giallo-l&quot;&gt;&lt;span&gt;Player A: Defect        (5, 0)                (1, 1)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In a single game, the strictly dominant mathematical strategy is always to &lt;strong&gt;Defect&lt;/strong&gt;. If you defect, you’re guaranteed to do better regardless of what the other person does.&lt;/p&gt;
+&lt;p&gt;So what happens when the game is played hundreds of times with no known end date?&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&quot;the-champion-tit-for-tat&quot;&gt;The Champion: Tit for Tat&lt;/h2&gt;
+&lt;p&gt;Scientists submitted sophisticated programs with probabilistic algorithms, deceptive traps, and psychological heuristics.&lt;/p&gt;
+&lt;p&gt;Yet the winning strategy was the simplest program in the entire competition: &lt;strong&gt;Tit for Tat&lt;/strong&gt;, written by Anatol Rapoport in just &lt;strong&gt;four lines of BASIC code&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;On the very first round, &lt;strong&gt;Cooperate&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;On every subsequent round, &lt;strong&gt;do whatever the other player did on the previous round&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;That’s it.&lt;/p&gt;
+&lt;p&gt;When pitted against aggressive defectors, complex algorithms, and sneaky cheats, Tit for Tat consistently outperformed every other strategy across hundreds of thousands of simulated interactions.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&quot;the-four-principles-of-long-term-success&quot;&gt;The Four Principles of Long-Term Success&lt;/h2&gt;
+&lt;p&gt;Axelrod analyzed what made Tit for Tat invincible. He discovered four specific characteristics that separated the winning algorithms from the losers:&lt;/p&gt;
+&lt;h3 id=&quot;1-be-nice-never-be-the-first-to-defect&quot;&gt;1. Be Nice (Never Be the First to Defect)&lt;/h3&gt;
+&lt;p&gt;Top-performing strategies were “nice”—they never initiated hostility or deception. In any repeated game, initiating distrust creates negative-sum spirals where both sides lose energy defending themselves.&lt;/p&gt;
+&lt;h3 id=&quot;2-be-retaliatory-don-t-be-a-pushover&quot;&gt;2. Be Retaliatory (Don’t Be a Pushover)&lt;/h3&gt;
+&lt;p&gt;When the other party defects, Tit for Tat punishes them immediately on the very next move. Being purely altruistic (turning the other cheek forever) invites exploitation by bad actors.&lt;/p&gt;
+&lt;h3 id=&quot;3-be-forgiving-don-t-hold-grudges&quot;&gt;3. Be Forgiving (Don’t Hold Grudges)&lt;/h3&gt;
+&lt;p&gt;As soon as the defector returns to cooperation, Tit for Tat immediately resumes cooperating. It doesn’t hold multi-turn grudges or demand excessive apologies. This prevents endless cycles of mutual retaliation.&lt;/p&gt;
+&lt;h3 id=&quot;4-be-clear-and-predictable-zero-deception&quot;&gt;4. Be Clear and Predictable (Zero Deception)&lt;/h3&gt;
+&lt;p&gt;Tit for Tat is completely transparent. The other party quickly figures out that cooperating brings steady rewards, while defecting causes immediate retaliation.&lt;/p&gt;
+&lt;hr /&gt;
+&lt;h2 id=&quot;translating-game-theory-to-everyday-life&quot;&gt;Translating Game Theory to Everyday Life&lt;/h2&gt;
+&lt;p&gt;Life is an iterated game, not a one-shot transaction:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;“You don’t win by being cutthroat. You win by being clear, trustworthy, principled when wronged, and quick to reconcile.”&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;In Engineering &amp;amp; Open Source&lt;/strong&gt;: Build genuine goodwill, ship clean contributions, and protect your boundaries.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;In Friendships &amp;amp; Business&lt;/strong&gt;: Never screw people over for short-term gain. The compound interest of a spotless reputation dwarfs any quick payoff.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Start with trust. Protect your standards. Forgive quickly.&lt;/p&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" >
+<head>
+	<!-- 2026-11-10 Tue 02:53 -->
+	<meta charset="UTF-8" />
+	<meta name="description" content="Systems programming, network architecture, and engineering thoughts by Garvit Singla." />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="theme-color" content="#2563eb" />
+		<meta name="theme-color" content="#60a5fa" media="(prefers-color-scheme:dark)" />
+	<title>GitHub Actions for dummies - Garvit Singla</title>
+	<link rel="canonical" href="/blog/github-actions-for-dummies/" /><link rel="icon" type="image/png" href="/blog/favicon.png" />
+
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/blog/apple-touch-icon.png" />
+
+		
+			
+				<link rel="alternate" type="application/atom+xml" title="Garvit Singla - Atom Feed" href="/blog/atom.xml">
+			
+		
+			
+				<link rel="alternate" type="application/rss+xml" title="Garvit Singla - RSS Feed" href="/blog/rss.xml">
+			
+		
+    <style type="text/css">
+	:root {--accent-color: #2563eb;}[data-theme="dark"] {
+			--accent-color: #60a5fa;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			:root:not([data-theme="light"]) {
+				--accent-color: #60a5fa;
+			}
+		}</style>
+
+			<link type="text/css" rel="stylesheet" href="/blog/style.css" />
+			<link type="text/css" rel="stylesheet" href="/blog/icons.css" />
+			<link type="text/css" rel="stylesheet" href="/blog/portfolio-theme.css" />
+			<link type="text/css" rel="stylesheet" href="/blog/giallo-light.css" media="(prefers-color-scheme: light)" />
+			<link type="text/css" rel="stylesheet" href="/blog/giallo-dark.css" media="(prefers-color-scheme: dark)" />
+			<script type="text/javascript" defer  src="/blog/closable.js"></script>
+			<script type="text/javascript" defer  src="/blog/copy-button.js"></script>
+			<script type="text/javascript" defer  src="/blog/fuse.js"></script>
+			<script type="text/javascript" defer  src="/blog/search-fuse.js"></script>
+			<script type="text/javascript" defer  src="/blog/theme-switcher.js"></script>
+
+	<meta property="og:site_name" content="Garvit Singla" />
+	<meta property="og:title" content="GitHub Actions for dummies - Garvit Singla" />
+	<meta property="og:url" content="/blog/github-actions-for-dummies/" />
+	<meta property="og:description" content="Demystifying automated CI/CD pipelines: runners, workflows, jobs, triggers, and building your first automated test &amp; deployment script from scratch." /><meta property="og:image" content="/blog/card.png" /><meta property="og:locale" content="en_US" />
+</head>
+
+<body>
+
+		
+<header id="site-nav">
+	<nav>
+		<a href="#main-content" tabindex="0">
+			Skip to Main Content
+		</a>
+		<ul>
+			<li id="home">
+				<a href="/">
+					<i class="icon"></i>Garvit Singla</a>
+			</li>
+			<li class="divider"></li>
+					<li>
+						<a href="/">Portfolio</a>
+					</li>
+					<li>
+						<a href="/blog/">Blog</a>
+					</li>
+					<li>
+						<a href="/shelf">Shelf</a>
+					</li>
+				<li id="search">
+					<button id="search-toggle" class="circle" title="Search">
+						<i class="icon"></i>
+					</button>
+				</li>
+				<li id="theme-switcher">
+					<details class="closable">
+						<summary class="circle" title="Theme">
+							<i class="icon"></i>
+						</summary>
+						<ul>
+							<li>
+								<button class="circle" id="theme-light" title="Switch to Light Theme">
+									<i class="icon"></i>
+								</button>
+							</li>
+							<li>
+								<button class="circle" id="theme-dark" title="Switch to Dark Theme">
+									<i class="icon"></i>
+								</button>
+							</li>
+							<li>
+								<button class="circle" id="theme-system" title="Use System Theme">
+									<i class="icon"></i>
+								</button>
+							</li>
+						</ul>
+					</details>
+				</li><li id="feed">
+					<details class="closable">
+						<summary class="circle" title="Feed">
+							<i class="icon"></i>
+						</summary>
+						<ul>
+								<li>
+									<a href="/blog/atom.xml" rel="">Atom</a>
+								</li>
+								<li>
+									<a href="/blog/rss.xml" rel="">RSS</a>
+								</li></ul>
+					</details>
+				</li>
+		</ul>
+	</nav>
+		<div id="search-container">
+			<label for="search-bar" class="visually-hidden">Search</label>
+			<input id="search-bar" placeholder="Search for…" autocomplete="off" type="search" disabled>
+			<div id="search-results-container">
+				<div id="search-results"></div>
+			</div>
+		</div>
+</header>
+<main id="main-content">
+		<article><div id="heading"><p>
+				<small>
+					<time datetime="2026-05-18T00:00:00">Published on
+						May 18, 2026</time></small>
+			</p><h1>GitHub Actions for dummies</h1><p>
+				<small><span>By Garvit Singla</span><span> • </span><span>2 minutes read</span><span> • </span></small>
+			</p>
+				<ul class="tags">
+					<a class="tag" href="/blog/tags">tags:</a><li><a class="tag" href="/blog/tags/devops/">DevOps</a></li><li><a class="tag" href="/blog/tags/ci-cd/">CI/CD</a></li><li><a class="tag" href="/blog/tags/automation/">Automation</a></li><li><a class="tag" href="/blog/tags/github/">GitHub</a></li>
+				</ul>
+				<br />
+	</div>
+
+	<div id="buttons-container"><a id="go-to-top" href="#top" title="Go to Top"><i class="icon"></i></a><a id="share" href="https://shareopenly.org/share/?url=/blog/github-actions-for-dummies/&text=Demystifying%20automated%20CI/CD%20pipelines%3A%20runners%2C%20workflows%2C%20jobs%2C%20triggers%2C%20and%20building%20your%20first%20automated%20test%20%26%20deployment%20script%20from%20scratch." rel="" title="Share"><i class="icon"></i></a></div><p>Have you ever wondered how tech teams manage to push code into production ten times a day without setting everything on fire?</p>
+<p>How do they ensure thousands of unit tests run, linters pass, Docker containers build, and staging deployments trigger automatically—the exact moment a pull request is merged?</p>
+<p>The magic behind this is <strong>Continuous Integration &amp; Continuous Deployment (CI/CD)</strong>, and <strong>GitHub Actions</strong> is the cleanest tool to master it.</p>
+<hr />
+<h2 id="the-mental-model-what-is-github-actions">The Mental Model: What is GitHub Actions?</h2>
+<p>Think of GitHub Actions as a free, ephemeral cloud computer (a runner) that spins up in an isolated sandbox, executes whatever terminal commands you specify, and then disappears.</p>
+<p>There are only <strong>4 core concepts</strong> you need to understand:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="plain"><span class="giallo-l"><span>[Event / Trigger]  -&gt;  [Workflow file (.github/workflows/*.yml)]</span></span>
+<span class="giallo-l"><span>                              |</span></span>
+<span class="giallo-l"><span>                     +--------+--------+</span></span>
+<span class="giallo-l"><span>                     |                 |</span></span>
+<span class="giallo-l"><span>                  [Job 1]           [Job 2]</span></span>
+<span class="giallo-l"><span>                     |                 |</span></span>
+<span class="giallo-l"><span>                  [Steps]           [Steps]</span></span>
+<span class="giallo-l"><span>                  - Checkout        - Run Build</span></span>
+<span class="giallo-l"><span>                  - Run Tests       - Deploy</span></span></code></pre>
+<ol>
+<li><strong>Workflow</strong>: The YAML configuration file residing in <code>.github/workflows/</code>.</li>
+<li><strong>Event (Trigger)</strong>: What kicks off the workflow (<code>push</code>, <code>pull_request</code>, <code>schedule</code>, or manual button <code>workflow_dispatch</code>).</li>
+<li><strong>Job</strong>: A set of steps executed on the same virtual machine (e.g. <code>ubuntu-latest</code>, <code>macos-latest</code>, <code>windows-latest</code>).</li>
+<li><strong>Step</strong>: An individual task—either running a shell command (<code>run: npm test</code>) or using a pre-packaged community action (<code>uses: actions/checkout@v4</code>).</li>
+</ol>
+<hr />
+<h2 id="writing-your-first-workflow-in-60-seconds">Writing Your First Workflow in 60 Seconds</h2>
+<p>Create a file in your repository: <code>.github/workflows/test.yml</code>:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="yaml"><span class="giallo-l"><span class="z-l-1 z-d-1">n</span><span class="z-l-1 z-d-1">ame</span><span>:</span><span class="z-l-2 z-d-2"> T</span><span class="z-l-2 z-d-2">est and Lint Suite</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">#</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> 1. Trigger when code is pushed to main or opened in a PR</span></span>
+<span class="giallo-l"><span class="z-l-7 z-d-7">on</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">  p</span><span class="z-l-1 z-d-1">ush</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    b</span><span class="z-l-1 z-d-1">ranches</span><span>:</span><span> [</span><span class="z-l-2 z-d-2">m</span><span class="z-l-2 z-d-2">ain</span><span>]</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">  p</span><span class="z-l-1 z-d-1">ull_request</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    b</span><span class="z-l-1 z-d-1">ranches</span><span>:</span><span> [</span><span class="z-l-2 z-d-2">m</span><span class="z-l-2 z-d-2">ain</span><span>]</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">j</span><span class="z-l-1 z-d-1">obs</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">  v</span><span class="z-l-1 z-d-1">erify</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    n</span><span class="z-l-1 z-d-1">ame</span><span>:</span><span class="z-l-2 z-d-2"> L</span><span class="z-l-2 z-d-2">int &amp; Run Unit Tests</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    r</span><span class="z-l-1 z-d-1">uns-on</span><span>:</span><span class="z-l-2 z-d-2"> u</span><span class="z-l-2 z-d-2">buntu-latest</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    s</span><span class="z-l-1 z-d-1">teps</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">      #</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Step 1: Clone the repository onto the runner</span></span>
+<span class="giallo-l"><span>      -</span><span class="z-l-1 z-d-1"> n</span><span class="z-l-1 z-d-1">ame</span><span>:</span><span class="z-l-2 z-d-2"> C</span><span class="z-l-2 z-d-2">heckout Code</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        u</span><span class="z-l-1 z-d-1">ses</span><span>:</span><span class="z-l-2 z-d-2"> a</span><span class="z-l-2 z-d-2">ctions/checkout@v4</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">      #</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Step 2: Install Node runtime</span></span>
+<span class="giallo-l"><span>      -</span><span class="z-l-1 z-d-1"> n</span><span class="z-l-1 z-d-1">ame</span><span>:</span><span class="z-l-2 z-d-2"> S</span><span class="z-l-2 z-d-2">etup Node.js</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        u</span><span class="z-l-1 z-d-1">ses</span><span>:</span><span class="z-l-2 z-d-2"> a</span><span class="z-l-2 z-d-2">ctions/setup-node@v4</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        w</span><span class="z-l-1 z-d-1">ith</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">          n</span><span class="z-l-1 z-d-1">ode-version</span><span>:</span><span class="z-l-9 z-d-9"> 20</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">          c</span><span class="z-l-1 z-d-1">ache</span><span>:</span><span class="z-l-2 z-d-2"> &#39;</span><span class="z-l-2 z-d-2">npm</span><span class="z-l-2 z-d-2">&#39;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">      #</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Step 3: Install dependencies</span></span>
+<span class="giallo-l"><span>      -</span><span class="z-l-1 z-d-1"> n</span><span class="z-l-1 z-d-1">ame</span><span>:</span><span class="z-l-2 z-d-2"> I</span><span class="z-l-2 z-d-2">nstall dependencies</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        r</span><span class="z-l-1 z-d-1">un</span><span>:</span><span class="z-l-2 z-d-2"> n</span><span class="z-l-2 z-d-2">pm ci</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">      #</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Step 4: Run linter</span></span>
+<span class="giallo-l"><span>      -</span><span class="z-l-1 z-d-1"> n</span><span class="z-l-1 z-d-1">ame</span><span>:</span><span class="z-l-2 z-d-2"> R</span><span class="z-l-2 z-d-2">un ESLint</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        r</span><span class="z-l-1 z-d-1">un</span><span>:</span><span class="z-l-2 z-d-2"> n</span><span class="z-l-2 z-d-2">pm run lint</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">      #</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Step 5: Execute test suite</span></span>
+<span class="giallo-l"><span>      -</span><span class="z-l-1 z-d-1"> n</span><span class="z-l-1 z-d-1">ame</span><span>:</span><span class="z-l-2 z-d-2"> R</span><span class="z-l-2 z-d-2">un Test Suite</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        r</span><span class="z-l-1 z-d-1">un</span><span>:</span><span class="z-l-2 z-d-2"> n</span><span class="z-l-2 z-d-2">pm test</span></span></code></pre>
+<p>That’s all it takes! Every time anyone submits a pull request, GitHub spins up an Ubuntu VM, pulls down your repository, installs packages, runs your checks, and reports a green checkmark or red cross directly next to their commit.</p>
+<hr />
+<h2 id="3-pro-tips-for-production-pipelines">3 Pro-Tips for Production Pipelines</h2>
+<h3 id="1-matrix-builds">1. Matrix Builds</h3>
+<p>Test across multiple platforms or language versions simultaneously:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="yaml"><span class="giallo-l"><span class="z-l-1 z-d-1">s</span><span class="z-l-1 z-d-1">trategy</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">  m</span><span class="z-l-1 z-d-1">atrix</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    o</span><span class="z-l-1 z-d-1">s</span><span>:</span><span> [</span><span class="z-l-2 z-d-2">u</span><span class="z-l-2 z-d-2">buntu-latest</span><span>,</span><span class="z-l-2 z-d-2"> m</span><span class="z-l-2 z-d-2">acos-latest</span><span>]</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    n</span><span class="z-l-1 z-d-1">ode-version</span><span>:</span><span> [</span><span class="z-l-9 z-d-9">18</span><span>,</span><span class="z-l-9 z-d-9"> 20</span><span>,</span><span class="z-l-9 z-d-9"> 22</span><span>]</span></span></code></pre><h3 id="2-protect-secrets">2. Protect Secrets</h3>
+<p>Never commit <code>.env</code> files or API tokens! Store them under <strong>Repository Settings &gt; Secrets and variables &gt; Actions</strong>, and inject them cleanly:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="yaml"><span class="giallo-l"><span class="z-l-1 z-d-1">e</span><span class="z-l-1 z-d-1">nv</span><span>:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">  D</span><span class="z-l-1 z-d-1">ATABASE_URL</span><span>:</span><span class="z-l-2 z-d-2"> $</span><span class="z-l-2 z-d-2">{{ secrets.PROD_DATABASE_URL }}</span></span></code></pre><h3 id="3-fail-fast-cache">3. Fail Fast &amp; Cache</h3>
+<p>Always enable dependency caching (<code>cache: 'npm'</code> or <code>cache: 'cargo'</code>). It can turn a 5-minute build into a 25-second breeze.</p>
+<p>Automate the boring stuff so you can focus on building what matters.</p>
+
+</article><hr />
+	<nav id="post-nav"><a class="post-nav-item post-nav-next" href="/blog/how-to-actually-win-in-life/">
+				<div class="nav-arrow">Next</div>
+				<span class="post-title">How to actually win in life (Real world experiment)</span>
+			</a></nav>
+	</main>
+	<footer id="site-footer">
+		<nav>
+			<ul>
+					<li>
+						<a href="/">Portfolio</a>
+					</li>
+					<li>
+						<a href="/blog/">Blog</a>
+					</li>
+					<li>
+						<a href="https://github.com/garvittsingla" rel="" class="external">GitHub</a>
+					</li>
+					<li>
+						<a href="https://x.com/garvitsinglaa" rel="" class="external">X</a>
+					</li>
+			</ul>
+		</nav>
+</footer>
+
+	
+	<span id="copy-code-text" class="hidden">Copy Code</span>
+	<span id="search-index" class="hidden">/blog/search_index.en.json</span>
+	<span id="more-matches-text" class="hidden">$MATCHES more matches</span>
+
+	<style type="text/css">
+	:root {
+		--alert-note-text: "Note";
+		--alert-tip-text: "Tip";
+		--alert-important-text: "Important";
+		--alert-warning-text: "Warning";
+		--alert-caution-text: "Caution";
+	}
+</style>
+
+
+</body>
+</html>

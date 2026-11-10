@@ -1,0 +1,56 @@
+title = "Garvit Singla"
+base_url = "/blog"
+description = "Systems programming, network architecture, and engineering thoughts by Garvit Singla."
+theme = "duckquill"
+
+compile_sass = true
+minify_html = false
+generate_feeds = true
+feed_filenames = ["atom.xml", "rss.xml"]
+build_search_index = true
+author = "Garvit Singla"
+default_language = "en"
+
+taxonomies = [{ name = "tags", feed = true }]
+
+[markdown]
+smart_punctuation = true
+bottom_footnotes = true
+github_alerts = true
+
+[markdown.highlighting]
+light_theme = "solarized-light"
+dark_theme = "solarized-dark"
+style = "class"
+error_on_missing_language = false
+
+[search]
+index_format = "fuse_json"
+
+[extra]
+accent_color = "#2563eb"
+accent_color_dark = "#60a5fa"
+styles = ["portfolio-theme.css"]
+show_copy_button = true
+show_reading_time = true
+show_share_button = true
+toc = true
+toc_inline = true
+
+[extra.nav]
+show_feed = true
+show_theme_switcher = true
+show_repo = false
+links = [
+    { name = "Portfolio", url = "/" },
+    { name = "Blog", url = "/blog/" },
+    { name = "Shelf", url = "/shelf" },
+]
+
+[extra.footer]
+links = [
+    { name = "Portfolio", url = "/" },
+    { name = "Blog", url = "/blog/" },
+    { name = "GitHub", url = "https://github.com/garvittsingla" },
+    { name = "X", url = "https://x.com/garvitsinglaa" },
+]

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" >
+<head>
+	<!-- 2026-11-10 Tue 02:53 -->
+	<meta charset="UTF-8" />
+	<meta name="description" content="Systems programming, network architecture, and engineering thoughts by Garvit Singla." />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="theme-color" content="#2563eb" />
+		<meta name="theme-color" content="#60a5fa" media="(prefers-color-scheme:dark)" />
+	<title>Implementing nslookup from scratch - Garvit Singla</title>
+	<link rel="canonical" href="/blog/nslookup/" /><link rel="icon" type="image/png" href="/blog/favicon.png" />
+
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/blog/apple-touch-icon.png" />
+
+		
+			
+				<link rel="alternate" type="application/atom+xml" title="Garvit Singla - Atom Feed" href="/blog/atom.xml">
+			
+		
+			
+				<link rel="alternate" type="application/rss+xml" title="Garvit Singla - RSS Feed" href="/blog/rss.xml">
+			
+		
+    <style type="text/css">
+	:root {--accent-color: #2563eb;}[data-theme="dark"] {
+			--accent-color: #60a5fa;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			:root:not([data-theme="light"]) {
+				--accent-color: #60a5fa;
+			}
+		}</style>
+
+			<link type="text/css" rel="stylesheet" href="/blog/style.css" />
+			<link type="text/css" rel="stylesheet" href="/blog/icons.css" />
+			<link type="text/css" rel="stylesheet" href="/blog/portfolio-theme.css" />
+			<link type="text/css" rel="stylesheet" href="/blog/giallo-light.css" media="(prefers-color-scheme: light)" />
+			<link type="text/css" rel="stylesheet" href="/blog/giallo-dark.css" media="(prefers-color-scheme: dark)" />
+			<script type="text/javascript" defer  src="/blog/closable.js"></script>
+			<script type="text/javascript" defer  src="/blog/copy-button.js"></script>
+			<script type="text/javascript" defer  src="/blog/fuse.js"></script>
+			<script type="text/javascript" defer  src="/blog/search-fuse.js"></script>
+			<script type="text/javascript" defer  src="/blog/theme-switcher.js"></script>
+
+	<meta property="og:site_name" content="Garvit Singla" />
+	<meta property="og:title" content="Implementing nslookup from scratch - Garvit Singla" />
+	<meta property="og:url" content="/blog/nslookup/" />
+	<meta property="og:description" content="A short 1-2 sentence description explaining how DNS queries work, UDP sockets, and parsing raw DNS wire format packets." /><meta property="og:image" content="/blog/card.png" /><meta property="og:locale" content="en_US" />
+</head>
+
+<body>
+
+		
+<header id="site-nav">
+	<nav>
+		<a href="#main-content" tabindex="0">
+			Skip to Main Content
+		</a>
+		<ul>
+			<li id="home">
+				<a href="/">
+					<i class="icon"></i>Garvit Singla</a>
+			</li>
+			<li class="divider"></li>
+					<li>
+						<a href="/">Portfolio</a>
+					</li>
+					<li>
+						<a href="/blog/">Blog</a>
+					</li>
+					<li>
+						<a href="/shelf">Shelf</a>
+					</li>
+				<li id="search">
+					<button id="search-toggle" class="circle" title="Search">
+						<i class="icon"></i>
+					</button>
+				</li>
+				<li id="theme-switcher">
+					<details class="closable">
+						<summary class="circle" title="Theme">
+							<i class="icon"></i>
+						</summary>
+						<ul>
+							<li>
+								<button class="circle" id="theme-light" title="Switch to Light Theme">
+									<i class="icon"></i>
+								</button>
+							</li>
+							<li>
+								<button class="circle" id="theme-dark" title="Switch to Dark Theme">
+									<i class="icon"></i>
+								</button>
+							</li>
+							<li>
+								<button class="circle" id="theme-system" title="Use System Theme">
+									<i class="icon"></i>
+								</button>
+							</li>
+						</ul>
+					</details>
+				</li><li id="feed">
+					<details class="closable">
+						<summary class="circle" title="Feed">
+							<i class="icon"></i>
+						</summary>
+						<ul>
+								<li>
+									<a href="/blog/atom.xml" rel="">Atom</a>
+								</li>
+								<li>
+									<a href="/blog/rss.xml" rel="">RSS</a>
+								</li></ul>
+					</details>
+				</li>
+		</ul>
+	</nav>
+		<div id="search-container">
+			<label for="search-bar" class="visually-hidden">Search</label>
+			<input id="search-bar" placeholder="Search for…" autocomplete="off" type="search" disabled>
+			<div id="search-results-container">
+				<div id="search-results"></div>
+			</div>
+		</div>
+</header>
+<main id="main-content">
+		<article><div id="heading"><p>
+				<small>
+					<time datetime="2026-10-04T00:00:00">Published on
+						October 04, 2026</time></small>
+			</p><h1>Implementing nslookup from scratch</h1><p>
+				<small><span>By Garvit Singla</span><span> • </span><span>2 minutes read</span><span> • </span></small>
+			</p>
+				<ul class="tags">
+					<a class="tag" href="/blog/tags">tags:</a><li><a class="tag" href="/blog/tags/networking/">Networking</a></li><li><a class="tag" href="/blog/tags/dns/">DNS</a></li><li><a class="tag" href="/blog/tags/c/">C</a></li><li><a class="tag" href="/blog/tags/sockets/">Sockets</a></li><li><a class="tag" href="/blog/tags/nslookup/">nslookup</a></li>
+				</ul>
+				<br />
+	</div>
+
+	<div id="buttons-container"><a id="go-to-top" href="#top" title="Go to Top"><i class="icon"></i></a><a id="share" href="https://shareopenly.org/share/?url=/blog/nslookup/&text=A%20short%201-2%20sentence%20description%20explaining%20how%20DNS%20queries%20work%2C%20UDP%20sockets%2C%20and%20parsing%20raw%20DNS%20wire%20format%20packets." rel="" title="Share"><i class="icon"></i></a></div><p>There is a very famous inteview question, what happens when you type google.com in your search bar
+The first and the most obvious jargon is DNS. DNS is a translation system which converts human readable domain names to computer understandable IP addresses.</p>
+<p>I started with the concept of DNS and how it works.
+then came to know about UNIX utilities like <code>nslookup</code> and <code>dig</code>.</p>
+<p>This blog is whole about my learning and building nslookup from scratch.</p>
+<hr />
+<h2 id="1-intro-and-understanding-10-sept-2026">1. Intro and understanding (10 sept 2026)</h2>
+<p>I started with reading about DNS headers and the DNS query process.</p>
+<blockquote>
+<p>DNS is the Domain Name System, a hierarchical naming system for computers and services on the Internet.</p>
+</blockquote>
+<p>DNS is based on UDP sockets but , if there is a big DNS query, it is split into multiple packets and transmitted with the help of TCP.</p>
+<h2 id="2-understanding-dns-query-process-11-sept-2026">2. Understanding DNS query process (11 sept 2026)</h2>
+<p>Next thing was to understand what is exactly DNS query process.
+For that we have to understand <strong>Types of DNS servers</strong>.</p>
+<ul>
+<li><strong>Root DNS servers</strong>: The first level of DNS servers that are responsible for resolving the top-level domain (TLD) names.</li>
+<li><strong>TLD DNS servers</strong>: The second level of DNS servers that are responsible for resolving the second-level domain (SLD) names.</li>
+<li><strong>Authoritative DNS servers</strong>: The third level of DNS servers that are responsible for resolving the domain names.</li>
+<li><strong>Recursive DNS servers</strong>: The fourth level of DNS servers that are responsible for resolving the domain names.</li>
+</ul>
+<p>if you want more detail refer : <a rel="external" href="https://www.cloudflare.com/learning/dns/dns-server-types/">Cloudflare docs</a></p>
+<p>So we are just quering the Recursive DNS server and not recursively finding the authoritative DNS servers.
+some of them are google’s DNS <code>8.8.8.8</code> and cloudflare’s DNS <code>1.1.1.1</code> or provided by your ISP.</p>
+<h2 id="3-making-dns-request-yourself-13-sept-2026">3. Making DNS request yourself (13 sept 2026)</h2>
+<p>I used nslookup and wireshark to actually make DNS requests and understand the process.
+<img src="https://github.com/garvittsingla/nslookup/raw/main/docs/dnsPacketStructure.png" alt="query" /></p>
+<h2 id="4-dns-header-structure">4. DNS header structure</h2>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="c"><span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">struct</span><span> dns_question_format</span><span>{</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> qtype</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> type of question</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> qclass</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> class of question</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    char</span><span> qname</span><span>[</span><span class="z-l-9 z-d-9">256</span><span>]</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> name of question</span></span>
+<span class="giallo-l"><span>}</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">struct</span><span> dns_resource_record_format</span><span>{</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> type</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> type of resource record</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> class</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> class of resource record</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint32_t</span><span> ttl</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> time to live</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> rdlength</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> length of rdata</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    char</span><span> rdata</span><span>[</span><span class="z-l-9 z-d-9">256</span><span>]</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> rdata of resource record</span></span>
+<span class="giallo-l"><span>}</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">struct</span><span> dns_request_format</span><span>{</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> id</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> for a application for multiple queries</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> flags</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> some flags that indicate the type of query</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> qdcount</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> number of questions</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> ancount</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> number of answers</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> nscount</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> number of name servers</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    uint16_t</span><span> arcount</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> number of additional records</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    struct</span><span> dns_question_format </span><span>questions</span><span>[</span><span class="z-l-9 z-d-9">1</span><span>]</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> array of questions</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    struct</span><span> dns_resource_record_format </span><span>answers</span><span>[</span><span class="z-l-9 z-d-9">1</span><span>]</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> array of answers</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    struct</span><span> dns_resource_record_format </span><span>name_servers</span><span>[</span><span class="z-l-9 z-d-9">1</span><span>]</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> array of name servers</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    struct</span><span> dns_resource_record_format </span><span>additional_records</span><span>[</span><span class="z-l-9 z-d-9">1</span><span>]</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> array of additional records</span></span>
+<span class="giallo-l"><span>}</span><span>;</span></span>
+<span class="giallo-l"></span></code></pre>
+<p>DNS header is of 12 bytes and the content inside it are ~500 bytes.</p>
+<h2 id="5-structuring-the-project">5. Structuring the project</h2>
+<p>I don’t only want to implement DNS but to write code in more maintainable, production level manner so that it is easier to read and modify later.</p>
+<p>For this project as the external dependency are very less so a simple MakeFile is enough</p>
+<p>I have made separate modules for each work in project i.e. All dns related stuff at one place, networking stuff etc.</p>
+<p>All the top level file imports are itself in the header file but will surely make a structure to include only 1 header file</p>
+
+</article><hr />
+	<nav id="post-nav"><a class="post-nav-item post-nav-prev" href="/blog/http-server-in-cpp/">
+				<div class="nav-arrow">Previous</div>
+				<span class="post-title">Building a Custom HTTP Server from Scratch in C++</span>
+			</a></nav>
+	</main>
+	<footer id="site-footer">
+		<nav>
+			<ul>
+					<li>
+						<a href="/">Portfolio</a>
+					</li>
+					<li>
+						<a href="/blog/">Blog</a>
+					</li>
+					<li>
+						<a href="https://github.com/garvittsingla" rel="" class="external">GitHub</a>
+					</li>
+					<li>
+						<a href="https://x.com/garvitsinglaa" rel="" class="external">X</a>
+					</li>
+			</ul>
+		</nav>
+</footer>
+
+	
+	<span id="copy-code-text" class="hidden">Copy Code</span>
+	<span id="search-index" class="hidden">/blog/search_index.en.json</span>
+	<span id="more-matches-text" class="hidden">$MATCHES more matches</span>
+
+	<style type="text/css">
+	:root {
+		--alert-note-text: "Note";
+		--alert-tip-text: "Tip";
+		--alert-important-text: "Important";
+		--alert-warning-text: "Warning";
+		--alert-caution-text: "Caution";
+	}
+</style>
+
+
+</body>
+</html>

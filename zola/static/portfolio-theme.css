@@ -1,0 +1,253 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Garvit Singla Portfolio Theme for Zola & Duckquill
+   Matches the warm notebook/paper aesthetic in light mode and
+   the obsidian slate aesthetic in dark mode.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Light Mode Variables ─────────────────────────────────────────────────── */
+:root {
+  --bg-color: #fdfbf7 !important;
+  --fg-color: #09090b !important;
+  --accent-color: #2563eb !important;
+  --accent-color-alpha: rgba(37, 99, 235, 0.12) !important;
+  --dot-color: rgba(108, 143, 224, 0.38) !important;
+  --glass-bg: rgba(253, 251, 247, 0.88) !important;
+  --card-bg: #faf6ea !important;
+  --card-border: #e5decb !important;
+  --fg-muted-1: rgba(0, 0, 0, 0.04) !important;
+  --fg-muted-2: #e5decb !important;
+  --fg-muted-3: #ded3bc !important;
+  --fg-muted-4: #64748b !important;
+  --fg-muted-5: #334155 !important;
+  --edge-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+  --shadow-raised: 0 10px 28px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ── Dark Mode Variables ──────────────────────────────────────────────────── */
+[data-theme="dark"],
+:root:not([data-theme="light"]) {
+  @media (prefers-color-scheme: dark) {
+    --bg-color: #090a0f !important;
+    --fg-color: #fafafa !important;
+    --accent-color: #60a5fa !important;
+    --accent-color-alpha: rgba(96, 165, 250, 0.16) !important;
+    --dot-color: rgba(138, 175, 248, 0.22) !important;
+    --glass-bg: rgba(9, 10, 15, 0.88) !important;
+    --card-bg: #121319 !important;
+    --card-border: #27272a !important;
+    --fg-muted-1: rgba(255, 255, 255, 0.04) !important;
+    --fg-muted-2: #27272a !important;
+    --fg-muted-3: #3f3f46 !important;
+    --fg-muted-4: #a1a1aa !important;
+    --fg-muted-5: #d4d4d8 !important;
+    --edge-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+    --shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+    --shadow-raised: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
+  }
+}
+
+[data-theme="dark"] {
+  --bg-color: #090a0f !important;
+  --fg-color: #fafafa !important;
+  --accent-color: #60a5fa !important;
+  --accent-color-alpha: rgba(96, 165, 250, 0.16) !important;
+  --dot-color: rgba(138, 175, 248, 0.22) !important;
+  --glass-bg: rgba(9, 10, 15, 0.88) !important;
+  --card-bg: #121319 !important;
+  --card-border: #27272a !important;
+  --fg-muted-1: rgba(255, 255, 255, 0.04) !important;
+  --fg-muted-2: #27272a !important;
+  --fg-muted-3: #3f3f46 !important;
+  --fg-muted-4: #a1a1aa !important;
+  --fg-muted-5: #d4d4d8 !important;
+  --edge-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+  --shadow-raised: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* ── Notebook Dot Grid Paper Background ───────────────────────────────────── */
+body {
+  background-color: var(--bg-color) !important;
+  background-image: radial-gradient(circle, var(--dot-color) 1.2px, transparent 1.2px) !important;
+  background-size: 24px 24px !important;
+  background-position: 0 0 !important;
+  color: var(--fg-color) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  transition: background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  line-height: 1.75 !important;
+}
+
+/* Selection Color matching portfolio */
+::selection {
+  background: #09090b !important;
+  color: #ffffff !important;
+}
+[data-theme="dark"] ::selection {
+  background: #ffffff !important;
+  color: #090a0f !important;
+}
+
+/* ── Top Navbar: Glassmorphic Archival Header ────────────────────────────── */
+#site-nav {
+  background-color: var(--glass-bg) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-bottom: 1px solid var(--fg-muted-2) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+#site-nav a {
+  color: var(--fg-muted-5) !important;
+  font-weight: 500 !important;
+  transition: color 0.2s ease !important;
+}
+
+#site-nav a:hover,
+#site-nav a.active {
+  color: var(--accent-color) !important;
+}
+
+/* ── Article List: Notebook Ledger Cards ─────────────────────────────────── */
+#article-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 1.25rem !important;
+  margin-top: 2rem !important;
+}
+
+#article-list article {
+  position: relative !important;
+  background-color: var(--card-bg) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 1rem !important;
+  padding: 1.5rem 1.75rem !important;
+  box-shadow: var(--shadow) !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.2s ease !important;
+}
+
+#article-list article:hover {
+  transform: translateY(-3px) !important;
+  border-color: var(--accent-color) !important;
+  box-shadow: var(--shadow-raised) !important;
+}
+
+#article-list article h3 {
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.5rem !important;
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;
+  color: var(--fg-color) !important;
+}
+
+#article-list article p {
+  color: var(--fg-muted-4) !important;
+  font-size: 0.95rem !important;
+  line-height: 1.6 !important;
+  margin-bottom: 1rem !important;
+}
+
+#article-list article .details {
+  border-top: 1px dashed var(--fg-muted-2) !important;
+  padding-top: 0.75rem !important;
+  margin-top: 0.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-size: 0.825rem !important;
+  color: var(--fg-muted-4) !important;
+}
+
+/* ── Tags / Badges ───────────────────────────────────────────────────────── */
+.tag,
+ul.tags li a {
+  background-color: var(--fg-muted-1) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 9999px !important;
+  padding: 0.2rem 0.65rem !important;
+  font-size: 0.75rem !important;
+  color: var(--fg-muted-5) !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+}
+
+.tag:hover,
+ul.tags li a:hover {
+  border-color: var(--accent-color) !important;
+  color: var(--accent-color) !important;
+  background-color: var(--accent-color-alpha) !important;
+}
+
+/* ── Article Reading Layout ──────────────────────────────────────────────── */
+main#main-content {
+  max-width: 740px !important;
+  margin: 0 auto !important;
+  padding: 2.5rem 1.25rem 5rem !important;
+}
+
+article #heading h1 {
+  font-size: 2.25rem !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1.25 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 1rem !important;
+  color: var(--fg-color) !important;
+}
+
+article p {
+  font-size: 1.05rem !important;
+  line-height: 1.8 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Blockquotes with warm amber/blue accent border */
+blockquote {
+  border-left: 3px solid var(--accent-color) !important;
+  background-color: var(--card-bg) !important;
+  padding: 1rem 1.25rem !important;
+  border-radius: 0 0.75rem 0.75rem 0 !important;
+  margin: 1.75rem 0 !important;
+  font-style: normal !important;
+  border-top: 1px solid var(--card-border) !important;
+  border-right: 1px solid var(--card-border) !important;
+  border-bottom: 1px solid var(--card-border) !important;
+}
+
+/* Code Blocks: sleek dark slate */
+pre {
+  background-color: #121319 !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 0.75rem !important;
+  padding: 1.25rem !important;
+  overflow-x: auto !important;
+  font-size: 0.875rem !important;
+  line-height: 1.65 !important;
+  box-shadow: var(--shadow) !important;
+}
+
+pre code {
+  color: #e4e4e7 !important;
+  background: transparent !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
+/* Inline Code chip */
+:not(pre) > code {
+  background-color: var(--fg-muted-1) !important;
+  border: 1px solid var(--card-border) !important;
+  border-radius: 0.35rem !important;
+  padding: 0.15rem 0.4rem !important;
+  font-size: 0.85em !important;
+  color: var(--accent-color) !important;
+}
+
+/* Footer: clean and centered */
+#site-footer {
+  border-top: 1px dashed var(--card-border) !important;
+  background-color: transparent !important;
+  padding: 2.5rem 1rem !important;
+  color: var(--fg-muted-4) !important;
+}

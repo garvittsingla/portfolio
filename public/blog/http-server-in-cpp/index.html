@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" >
+<head>
+	<!-- 2026-11-10 Tue 02:53 -->
+	<meta charset="UTF-8" />
+	<meta name="description" content="Systems programming, network architecture, and engineering thoughts by Garvit Singla." />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="theme-color" content="#2563eb" />
+		<meta name="theme-color" content="#60a5fa" media="(prefers-color-scheme:dark)" />
+	<title>Building a Custom HTTP Server from Scratch in C++ - Garvit Singla</title>
+	<link rel="canonical" href="/blog/http-server-in-cpp/" /><link rel="icon" type="image/png" href="/blog/favicon.png" />
+
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/blog/apple-touch-icon.png" />
+
+		
+			
+				<link rel="alternate" type="application/atom+xml" title="Garvit Singla - Atom Feed" href="/blog/atom.xml">
+			
+		
+			
+				<link rel="alternate" type="application/rss+xml" title="Garvit Singla - RSS Feed" href="/blog/rss.xml">
+			
+		
+    <style type="text/css">
+	:root {--accent-color: #2563eb;}[data-theme="dark"] {
+			--accent-color: #60a5fa;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			:root:not([data-theme="light"]) {
+				--accent-color: #60a5fa;
+			}
+		}</style>
+
+			<link type="text/css" rel="stylesheet" href="/blog/style.css" />
+			<link type="text/css" rel="stylesheet" href="/blog/icons.css" />
+			<link type="text/css" rel="stylesheet" href="/blog/portfolio-theme.css" />
+			<link type="text/css" rel="stylesheet" href="/blog/giallo-light.css" media="(prefers-color-scheme: light)" />
+			<link type="text/css" rel="stylesheet" href="/blog/giallo-dark.css" media="(prefers-color-scheme: dark)" />
+			<script type="text/javascript" defer  src="/blog/closable.js"></script>
+			<script type="text/javascript" defer  src="/blog/copy-button.js"></script>
+			<script type="text/javascript" defer  src="/blog/fuse.js"></script>
+			<script type="text/javascript" defer  src="/blog/search-fuse.js"></script>
+			<script type="text/javascript" defer  src="/blog/theme-switcher.js"></script>
+
+	<meta property="og:site_name" content="Garvit Singla" />
+	<meta property="og:title" content="Building a Custom HTTP Server from Scratch in C++ - Garvit Singla" />
+	<meta property="og:url" content="/blog/http-server-in-cpp/" />
+	<meta property="og:description" content="Demystifying low-level UNIX network sockets, object-oriented socket abstractions, and crafting a minimal HTTP/1.1 web server in modern C++." /><meta property="og:image" content="/blog/card.png" /><meta property="og:locale" content="en_US" />
+</head>
+
+<body>
+
+		
+<header id="site-nav">
+	<nav>
+		<a href="#main-content" tabindex="0">
+			Skip to Main Content
+		</a>
+		<ul>
+			<li id="home">
+				<a href="/">
+					<i class="icon"></i>Garvit Singla</a>
+			</li>
+			<li class="divider"></li>
+					<li>
+						<a href="/">Portfolio</a>
+					</li>
+					<li>
+						<a href="/blog/">Blog</a>
+					</li>
+					<li>
+						<a href="/shelf">Shelf</a>
+					</li>
+				<li id="search">
+					<button id="search-toggle" class="circle" title="Search">
+						<i class="icon"></i>
+					</button>
+				</li>
+				<li id="theme-switcher">
+					<details class="closable">
+						<summary class="circle" title="Theme">
+							<i class="icon"></i>
+						</summary>
+						<ul>
+							<li>
+								<button class="circle" id="theme-light" title="Switch to Light Theme">
+									<i class="icon"></i>
+								</button>
+							</li>
+							<li>
+								<button class="circle" id="theme-dark" title="Switch to Dark Theme">
+									<i class="icon"></i>
+								</button>
+							</li>
+							<li>
+								<button class="circle" id="theme-system" title="Use System Theme">
+									<i class="icon"></i>
+								</button>
+							</li>
+						</ul>
+					</details>
+				</li><li id="feed">
+					<details class="closable">
+						<summary class="circle" title="Feed">
+							<i class="icon"></i>
+						</summary>
+						<ul>
+								<li>
+									<a href="/blog/atom.xml" rel="">Atom</a>
+								</li>
+								<li>
+									<a href="/blog/rss.xml" rel="">RSS</a>
+								</li></ul>
+					</details>
+				</li>
+		</ul>
+	</nav>
+		<div id="search-container">
+			<label for="search-bar" class="visually-hidden">Search</label>
+			<input id="search-bar" placeholder="Search for…" autocomplete="off" type="search" disabled>
+			<div id="search-results-container">
+				<div id="search-results"></div>
+			</div>
+		</div>
+</header>
+<main id="main-content">
+		<article><div id="heading"><p>
+				<small>
+					<time datetime="2026-09-17T00:00:00">Published on
+						September 17, 2026</time></small>
+			</p><h1>Building a Custom HTTP Server from Scratch in C++</h1><p>
+				<small><span>By Garvit Singla</span><span> • </span><span>3 minutes read</span><span> • </span></small>
+			</p>
+				<ul class="tags">
+					<a class="tag" href="/blog/tags">tags:</a><li><a class="tag" href="/blog/tags/c/">C++</a></li><li><a class="tag" href="/blog/tags/networking/">Networking</a></li><li><a class="tag" href="/blog/tags/systems/">Systems</a></li><li><a class="tag" href="/blog/tags/sockets/">Sockets</a></li><li><a class="tag" href="/blog/tags/http/">HTTP</a></li>
+				</ul>
+				<br />
+	</div>
+
+	<div id="buttons-container"><a id="go-to-top" href="#top" title="Go to Top"><i class="icon"></i></a><a id="share" href="https://shareopenly.org/share/?url=/blog/http-server-in-cpp/&text=Demystifying%20low-level%20UNIX%20network%20sockets%2C%20object-oriented%20socket%20abstractions%2C%20and%20crafting%20a%20minimal%20HTTP/1.1%20web%20server%20in%20modern%20C%2B%2B." rel="" title="Share"><i class="icon"></i></a></div><p>Most web developers interact with web servers through high-level abstractions like Express, FastAPI, or Actix. We type <code>app.listen(8080)</code> and take for granted the intricate operating system plumbing running beneath our feet.</p>
+<p>To truly understand how backend systems work, I decided to build a custom <strong>HTTP/1.1 server from scratch in C++</strong> using raw Berkeley UNIX sockets.</p>
+<p>In this article, I’ll walk through the architectural design, object-oriented socket hierarchy, and how we listen for TCP handshakes and serve real HTTP responses.</p>
+<blockquote>
+<p>Full source code is open source on GitHub: <a rel="external" href="https://github.com/garvittsingla/http-server-cpp">garvittsingla/http-server-cpp</a>.</p>
+</blockquote>
+<hr />
+<h2 id="the-big-picture-how-web-traffic-actually-works">The Big Picture: How Web Traffic Actually Works</h2>
+<p>At the lowest level, an HTTP server is just a user-space program asking the operating system kernel for a communication endpoint (a <strong>socket</strong>), binding it to a local network interface and port, and waiting in an infinite loop for clients to send bytes.</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="plain"><span class="giallo-l"><span>[ Client (Browser / cURL) ]</span></span>
+<span class="giallo-l"><span>             |</span></span>
+<span class="giallo-l"><span>             v  TCP 3-Way Handshake (SYN, SYN-ACK, ACK)</span></span>
+<span class="giallo-l"><span>[ Kernel TCP Stack ]</span></span>
+<span class="giallo-l"><span>             |</span></span>
+<span class="giallo-l"><span>             v  accept() extracts connection from backlog</span></span>
+<span class="giallo-l"><span>[ Server Process (C++) ]</span></span>
+<span class="giallo-l"><span>  - recv()   -&gt; reads raw HTTP request string</span></span>
+<span class="giallo-l"><span>  - parse()  -&gt; extracts Method, Route, Headers</span></span>
+<span class="giallo-l"><span>  - send()   -&gt; writes raw HTTP/1.1 response</span></span>
+<span class="giallo-l"><span>  - close()  -&gt; terminates TCP socket</span></span></code></pre>
+<p>Instead of putting all raw C socket system calls into one massive, messy 400-line <code>main.cpp</code>, I designed a modular, object-oriented hierarchy under the <code>HDE</code> namespace.</p>
+<hr />
+<h2 id="1-the-foundation-hde-simplesocket">1. The Foundation: <code>HDE::SimpleSocket</code></h2>
+<p>Every network socket in UNIX requires initializing a <code>struct sockaddr_in</code> address structure, specifying the address family (<code>AF_INET</code> for IPv4), byte-ordering conversion functions (<code>htons</code> and <code>htonl</code>), and instantiating the socket file descriptor via <code>socket()</code>.</p>
+<p>Here is the abstract base class:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="cpp"><span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">//</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Networking/SimpleSocket.hpp</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">namespace</span><span class="z-l-8 z-d-8"> HDE</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    class</span><span class="z-l-8 z-d-8"> SimpleSocket</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">        private</span><span class="z-l-3 z-l-b z-d-6 z-d-b">:</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">            struct</span><span class="z-l-8 z-d-8"> sockaddr_in</span><span class="z-l-1 z-d-1"> address</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> IP + port structure</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">            int</span><span class="z-l-1 z-d-1"> sock</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i">                   //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> File descriptor handle</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">            int</span><span class="z-l-1 z-d-1"> connection</span><span>;</span><span class="z-l-6 z-l-i z-d-3 z-d-i">             //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Connection status code</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">        public</span><span class="z-l-3 z-l-b z-d-6 z-d-b">:</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">            SimpleSocket</span><span>(</span><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span> domain</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span> service</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span> protocol</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span> port</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> u_long</span><span> interface</span><span>)</span><span>;</span><span> </span></span>
+<span class="giallo-l"><span>            </span></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">            //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Pure virtual method: forces derived classes to specify connection behavior</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">            virtual</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> connect_to_network</span><span>(</span><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span> sock</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> struct</span><span class="z-l-8 z-d-8"> sockaddr_in</span><span> address</span><span>)</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-9 z-d-9"> 0</span><span>;</span></span>
+<span class="giallo-l"><span>            </span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">            void</span><span class="z-l-1 z-d-1"> test_connection</span><span>(</span><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span> item_to_test</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">            struct</span><span class="z-l-8 z-d-8"> sockaddr_in</span><span class="z-l-1 z-d-1"> get_address</span><span>(</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">            int</span><span class="z-l-1 z-d-1"> get_sock</span><span>(</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">            int</span><span class="z-l-1 z-d-1"> get_connection</span><span>(</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">            void</span><span class="z-l-1 z-d-1"> set_connection</span><span>(</span><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span> conn</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>    }</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre><h3 id="implementing-socket-creation">Implementing Socket Creation</h3>
+<p>In <code>SimpleSocket.cpp</code>, we construct the socket and convert the port and interface to network byte order (Big Endian):</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="cpp"><span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &quot;</span><span class="z-l-2 z-d-2">SimpleSocket.hpp</span><span class="z-l-2 z-d-2">&quot;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-8 z-d-8">HDE</span><span>::</span><span class="z-l-8 z-d-8">SimpleSocket</span><span>::</span><span class="z-l-1 z-d-1">SimpleSocket</span><span>(</span><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span class="z-l-1 z-d-1"> domain</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> service</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> protocol</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> port</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> u_long</span><span class="z-l-1 z-d-1"> interface</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    address</span><span>.</span><span class="z-l-1 z-d-1">sin_family</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-1 z-d-1"> domain</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    address</span><span>.</span><span class="z-l-1 z-d-1">sin_port</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-1 z-d-1"> htons</span><span>(</span><span class="z-l-1 z-d-1">port</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    address</span><span>.</span><span class="z-l-1 z-d-1">sin_addr</span><span>.</span><span class="z-l-1 z-d-1">s_addr</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-1 z-d-1"> htonl</span><span>(</span><span class="z-l-1 z-d-1">interface</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">    //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Request a socket file descriptor from kernel</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    sock</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-1 z-d-1"> socket</span><span>(</span><span class="z-l-1 z-d-1">domain</span><span>,</span><span class="z-l-1 z-d-1"> service</span><span>,</span><span class="z-l-1 z-d-1"> protocol</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    test_connection</span><span>(</span><span class="z-l-1 z-d-1">sock</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">void</span><span class="z-l-8 z-d-8"> HDE</span><span>::</span><span class="z-l-8 z-d-8">SimpleSocket</span><span>::</span><span class="z-l-1 z-d-1">test_connection</span><span>(</span><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span> item_to_test</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">    if</span><span> (</span><span class="z-l-1 z-d-1">item_to_test</span><span class="z-l-5 z-d-5"> &lt;</span><span class="z-l-9 z-d-9"> 0</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        perror</span><span>(</span><span class="z-l-2 z-d-2">&quot;</span><span class="z-l-2 z-d-2">Socket creation failed</span><span class="z-l-2 z-d-2">&quot;</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        exit</span><span>(</span><span class="z-l-1 z-d-1">EXIT_FAILURE</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>Notice the pure virtual <code>connect_to_network()</code> function. A client socket uses <code>connect()</code>, whereas a server socket uses <code>bind()</code>. By declaring it pure virtual, <code>SimpleSocket</code> cannot be accidentally instantiated on its own.</p>
+<hr />
+<h2 id="2-binding-to-an-interface-hde-bindingsocket">2. Binding to an Interface: <code>HDE::BindingSocket</code></h2>
+<p>Once a socket descriptor is allocated, we must bind it to an IP address and port on the host machine. This tells the kernel: <em>“Any traffic arriving on port 8080 belongs to this file descriptor.”</em></p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="cpp"><span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">//</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Networking/BindingSocket.cpp</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &quot;</span><span class="z-l-2 z-d-2">BindingSocket.hpp</span><span class="z-l-2 z-d-2">&quot;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &lt;</span><span class="z-l-2 z-d-2">sys/socket.h</span><span class="z-l-2 z-d-2">&gt;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-8 z-d-8">HDE</span><span>::</span><span class="z-l-8 z-d-8">BindingSocket</span><span>::</span><span class="z-l-1 z-d-1">BindingSocket</span><span>(</span><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span class="z-l-1 z-d-1"> domain</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> service</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> protocol</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> port</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> u_long</span><span class="z-l-1 z-d-1"> interface</span><span>)</span></span>
+<span class="giallo-l"><span>    :</span><span class="z-l-1 z-d-1"> SimpleSocket</span><span>(</span><span class="z-l-1 z-d-1">domain</span><span>,</span><span class="z-l-1 z-d-1"> service</span><span>,</span><span class="z-l-1 z-d-1"> protocol</span><span>,</span><span class="z-l-1 z-d-1"> port</span><span>,</span><span class="z-l-1 z-d-1"> interface</span><span>)</span><span> {</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">    int</span><span class="z-l-1 z-d-1"> conn</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-1 z-d-1"> connect_to_network</span><span>(</span><span class="z-l-1 z-d-1">get_sock</span><span>(</span><span>)</span><span>,</span><span class="z-l-1 z-d-1"> get_address</span><span>(</span><span>)</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    set_connection</span><span>(</span><span class="z-l-1 z-d-1">conn</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    test_connection</span><span>(</span><span class="z-l-1 z-d-1">get_connection</span><span>(</span><span>)</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span class="z-l-8 z-d-8"> HDE</span><span>::</span><span class="z-l-8 z-d-8">BindingSocket</span><span>::</span><span class="z-l-1 z-d-1">connect_to_network</span><span>(</span><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span> sock</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> struct</span><span class="z-l-8 z-d-8"> sockaddr_in</span><span> address</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">    return</span><span class="z-l-1 z-d-1"> bind</span><span>(</span><span class="z-l-1 z-d-1">sock</span><span>,</span><span> (</span><span class="z-l-3 z-l-b z-d-6 z-d-b">struct</span><span class="z-l-8 z-d-8"> sockaddr</span><span class="z-l-3 z-l-b z-d-6 z-d-b">*</span><span>)</span><span class="z-l-5 z-d-5">&amp;</span><span class="z-l-1 z-d-1">address</span><span>,</span><span class="z-l-5 z-d-5"> sizeof</span><span>(</span><span class="z-l-1 z-d-1">address</span><span>)</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>By overriding <code>connect_to_network</code>, we invoke the POSIX <code>bind()</code> system call seamlessly during initialization.</p>
+<hr />
+<h2 id="3-entering-the-passive-state-hde-listeningsocket">3. Entering the Passive State: <code>HDE::ListeningSocket</code></h2>
+<p>A bound socket cannot accept incoming connections until it is explicitly switched into <strong>passive listening mode</strong> via <code>listen()</code>. We also specify a <code>backlog</code> parameter, which defines the maximum length of the queue of pending connections.</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="cpp"><span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">//</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Networking/ListeningSocket.cpp</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &quot;</span><span class="z-l-2 z-d-2">ListeningSocket.hpp</span><span class="z-l-2 z-d-2">&quot;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &lt;</span><span class="z-l-2 z-d-2">sys/socket.h</span><span class="z-l-2 z-d-2">&gt;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-8 z-d-8">HDE</span><span>::</span><span class="z-l-8 z-d-8">ListeningSocket</span><span>::</span><span class="z-l-1 z-d-1">ListeningSocket</span><span>(</span><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span class="z-l-1 z-d-1"> domain</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> service</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> protocol</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> port</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> u_long</span><span class="z-l-1 z-d-1"> interface</span><span>,</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> int</span><span class="z-l-1 z-d-1"> bklg</span><span>)</span></span>
+<span class="giallo-l"><span>    :</span><span class="z-l-1 z-d-1"> BindingSocket</span><span>(</span><span class="z-l-1 z-d-1">domain</span><span>,</span><span class="z-l-1 z-d-1"> service</span><span>,</span><span class="z-l-1 z-d-1"> protocol</span><span>,</span><span class="z-l-1 z-d-1"> port</span><span>,</span><span class="z-l-1 z-d-1"> interface</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span>    </span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    backlog</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-1 z-d-1"> bklg</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    start_listening</span><span>(</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    test_connection</span><span>(</span><span class="z-l-1 z-d-1">listening</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">void</span><span class="z-l-8 z-d-8"> HDE</span><span>::</span><span class="z-l-8 z-d-8">ListeningSocket</span><span>::</span><span class="z-l-1 z-d-1">start_listening</span><span>(</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">    listening</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-1 z-d-1"> listen</span><span>(</span><span class="z-l-1 z-d-1">get_sock</span><span>(</span><span>)</span><span>,</span><span class="z-l-1 z-d-1"> backlog</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<p>With just three focused classes, we have encapsulated socket creation, network binding, and listener state with robust error checking at each phase.</p>
+<hr />
+<h2 id="4-the-server-event-loop-handling-incoming-requests">4. The Server Event Loop: Handling Incoming Requests</h2>
+<p>Now comes the fun part: serving real HTTP requests in <code>berner.cpp</code>.</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="cpp"><span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &quot;</span><span class="z-l-2 z-d-2">Networking/ListeningSocket.hpp</span><span class="z-l-2 z-d-2">&quot;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &lt;</span><span class="z-l-2 z-d-2">iostream</span><span class="z-l-2 z-d-2">&gt;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &lt;</span><span class="z-l-2 z-d-2">unistd.h</span><span class="z-l-2 z-d-2">&gt;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &lt;</span><span class="z-l-2 z-d-2">sys/socket.h</span><span class="z-l-2 z-d-2">&gt;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &lt;</span><span class="z-l-2 z-d-2">netinet/in.h</span><span class="z-l-2 z-d-2">&gt;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &lt;</span><span class="z-l-2 z-d-2">arpa/inet.h</span><span class="z-l-2 z-d-2">&gt;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">#</span><span class="z-l-5 z-d-5">include</span><span class="z-l-2 z-d-2"> &lt;</span><span class="z-l-2 z-d-2">cstring</span><span class="z-l-2 z-d-2">&gt;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">int</span><span class="z-l-1 z-d-1"> main</span><span>(</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">    //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Listen on IPv4 (AF_INET), TCP (SOCK_STREAM), Port 8080, Any Interface, Backlog 10</span></span>
+<span class="giallo-l"><span class="z-l-8 z-d-8">    HDE</span><span>::</span><span class="z-l-8 z-d-8">ListeningSocket</span><span class="z-l-1 z-d-1"> serverSocket</span><span>(</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        AF_INET</span><span>,</span><span class="z-l-1 z-d-1"> SOCK_STREAM</span><span>,</span><span class="z-l-9 z-d-9"> 0</span><span>,</span><span class="z-l-9 z-d-9"> 8080</span><span>,</span><span class="z-l-1 z-d-1"> INADDR_ANY</span><span>,</span><span class="z-l-9 z-d-9"> 10</span></span>
+<span class="giallo-l"><span>    )</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-8 z-d-8">    std</span><span>::</span><span class="z-l-1 z-d-1">cout</span><span class="z-l-5 z-d-5"> &lt;&lt;</span><span class="z-l-2 z-d-2"> &quot;</span><span class="z-l-2 z-d-2">Server listening on port 8080...</span><span class="z-l-2 z-d-2">&quot;</span><span class="z-l-5 z-d-5"> &lt;&lt;</span><span class="z-l-8 z-d-8"> std</span><span>::</span><span class="z-l-1 z-d-1">endl</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">    while</span><span> (</span><span class="z-l-7 z-d-7">true</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">        struct</span><span class="z-l-8 z-d-8"> sockaddr_in</span><span class="z-l-1 z-d-1"> client_address</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">        socklen_t</span><span class="z-l-1 z-d-1"> address_len</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-5 z-d-5"> sizeof</span><span>(</span><span class="z-l-1 z-d-1">client_address</span><span>)</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">        //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> 1. Accept incoming TCP connection</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">        int</span><span class="z-l-1 z-d-1"> client_fd</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-1 z-d-1"> accept</span><span>(</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">            serverSocket</span><span>.</span><span class="z-l-1 z-d-1">get_sock</span><span>(</span><span>)</span><span>,</span></span>
+<span class="giallo-l"><span>            (</span><span class="z-l-3 z-l-b z-d-6 z-d-b">struct</span><span class="z-l-8 z-d-8"> sockaddr</span><span class="z-l-3 z-l-b z-d-6 z-d-b">*</span><span>)</span><span class="z-l-5 z-d-5">&amp;</span><span class="z-l-1 z-d-1">client_address</span><span>,</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">            &amp;</span><span class="z-l-1 z-d-1">address_len</span></span>
+<span class="giallo-l"><span>        )</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">        if</span><span> (</span><span class="z-l-1 z-d-1">client_fd</span><span class="z-l-5 z-d-5"> &lt;</span><span class="z-l-9 z-d-9"> 0</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">            perror</span><span>(</span><span class="z-l-2 z-d-2">&quot;</span><span class="z-l-2 z-d-2">accept failed</span><span class="z-l-2 z-d-2">&quot;</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">            continue</span><span>;</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">        //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Print connecting client&#39;s IP address</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">        char</span><span class="z-l-1 z-d-1"> client_ip</span><span>[</span><span class="z-l-1 z-d-1">INET_ADDRSTRLEN</span><span>]</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        inet_ntop</span><span>(</span><span class="z-l-1 z-d-1">AF_INET</span><span>,</span><span class="z-l-5 z-d-5"> &amp;</span><span class="z-l-1 z-d-1">client_address</span><span>.</span><span class="z-l-1 z-d-1">sin_addr</span><span>,</span><span class="z-l-1 z-d-1"> client_ip</span><span>,</span><span class="z-l-1 z-d-1"> INET_ADDRSTRLEN</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-8 z-d-8">        std</span><span>::</span><span class="z-l-1 z-d-1">cout</span><span class="z-l-5 z-d-5"> &lt;&lt;</span><span class="z-l-2 z-d-2"> &quot;</span><span class="z-l-2 z-d-2">Connection received from </span><span class="z-l-2 z-d-2">&quot;</span><span class="z-l-5 z-d-5"> &lt;&lt;</span><span class="z-l-1 z-d-1"> client_ip</span><span class="z-l-5 z-d-5"> &lt;&lt;</span><span class="z-l-8 z-d-8"> std</span><span>::</span><span class="z-l-1 z-d-1">endl</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">        //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> 2. Read the raw HTTP request bytes</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">        char</span><span class="z-l-1 z-d-1"> buffer</span><span>[</span><span class="z-l-9 z-d-9">1024</span><span>]</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">        ssize_t</span><span class="z-l-1 z-d-1"> bytes_received</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-1 z-d-1"> recv</span><span>(</span><span class="z-l-1 z-d-1">client_fd</span><span>,</span><span class="z-l-1 z-d-1"> buffer</span><span>,</span><span class="z-l-5 z-d-5"> sizeof</span><span>(</span><span class="z-l-1 z-d-1">buffer</span><span>)</span><span class="z-l-5 z-d-5"> -</span><span class="z-l-9 z-d-9"> 1</span><span>,</span><span class="z-l-9 z-d-9"> 0</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">        if</span><span> (</span><span class="z-l-1 z-d-1">bytes_received</span><span class="z-l-5 z-d-5"> &lt;</span><span class="z-l-9 z-d-9"> 0</span><span>)</span><span> {</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">            perror</span><span>(</span><span class="z-l-2 z-d-2">&quot;</span><span class="z-l-2 z-d-2">recv failed</span><span class="z-l-2 z-d-2">&quot;</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">            close</span><span>(</span><span class="z-l-1 z-d-1">client_fd</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">            continue</span><span>;</span></span>
+<span class="giallo-l"><span>        }</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        buffer</span><span>[</span><span class="z-l-1 z-d-1">bytes_received</span><span>]</span><span class="z-l-5 z-d-5"> =</span><span class="z-l-2 z-d-2"> &#39;</span><span class="z-l-8 z-d-8">\0</span><span class="z-l-2 z-d-2">&#39;</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-8 z-d-8">        std</span><span>::</span><span class="z-l-1 z-d-1">cout</span><span class="z-l-5 z-d-5"> &lt;&lt;</span><span class="z-l-2 z-d-2"> &quot;</span><span class="z-l-2 z-d-2">Request payload:</span><span class="z-l-8 z-d-8">\n</span><span class="z-l-2 z-d-2">&quot;</span><span class="z-l-5 z-d-5"> &lt;&lt;</span><span class="z-l-1 z-d-1"> buffer</span><span class="z-l-5 z-d-5"> &lt;&lt;</span><span class="z-l-8 z-d-8"> std</span><span>::</span><span class="z-l-1 z-d-1">endl</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">        //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> 3. Format valid HTTP/1.1 response</span></span>
+<span class="giallo-l"><span class="z-l-3 z-l-b z-d-6 z-d-b">        const</span><span class="z-l-3 z-l-b z-d-6 z-d-b"> char</span><span class="z-l-3 z-l-b z-d-6 z-d-b">*</span><span class="z-l-1 z-d-1"> response</span><span class="z-l-5 z-d-5"> =</span></span>
+<span class="giallo-l"><span class="z-l-2 z-d-2">            &quot;</span><span class="z-l-2 z-d-2">HTTP/1.1 200 OK</span><span class="z-l-8 z-d-8">\r</span><span class="z-l-8 z-d-8">\n</span><span class="z-l-2 z-d-2">&quot;</span></span>
+<span class="giallo-l"><span class="z-l-2 z-d-2">            &quot;</span><span class="z-l-2 z-d-2">Content-Type: text/plain</span><span class="z-l-8 z-d-8">\r</span><span class="z-l-8 z-d-8">\n</span><span class="z-l-2 z-d-2">&quot;</span></span>
+<span class="giallo-l"><span class="z-l-2 z-d-2">            &quot;</span><span class="z-l-2 z-d-2">Content-Length: 2</span><span class="z-l-8 z-d-8">\r</span><span class="z-l-8 z-d-8">\n</span><span class="z-l-2 z-d-2">&quot;</span></span>
+<span class="giallo-l"><span class="z-l-2 z-d-2">            &quot;</span><span class="z-l-8 z-d-8">\r</span><span class="z-l-8 z-d-8">\n</span><span class="z-l-2 z-d-2">&quot;</span></span>
+<span class="giallo-l"><span class="z-l-2 z-d-2">            &quot;</span><span class="z-l-2 z-d-2">Hi</span><span class="z-l-2 z-d-2">&quot;</span><span>;</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">        //</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> 4. Send response &amp; terminate client socket</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        send</span><span>(</span><span class="z-l-1 z-d-1">client_fd</span><span>,</span><span class="z-l-1 z-d-1"> response</span><span>,</span><span class="z-l-1 z-d-1"> strlen</span><span>(</span><span class="z-l-1 z-d-1">response</span><span>)</span><span>,</span><span class="z-l-9 z-d-9"> 0</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">        close</span><span>(</span><span class="z-l-1 z-d-1">client_fd</span><span>)</span><span>;</span></span>
+<span class="giallo-l"><span>    }</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span class="z-l-5 z-d-5">    return</span><span class="z-l-9 z-d-9"> 0</span><span>;</span></span>
+<span class="giallo-l"><span>}</span></span></code></pre>
+<hr />
+<h2 id="testing-the-server">Testing the Server</h2>
+<p>We compile using standard C++17 with <code>-Wall</code> flags:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="shellscript"><span class="giallo-l"><span class="z-l-1 z-d-1">g++</span><span class="z-l-8 z-d-8"> -</span><span class="z-l-8 z-d-8">std=c++17</span><span class="z-l-8 z-d-8"> -</span><span class="z-l-8 z-d-8">Wall</span><span class="z-l-8 z-d-8"> -</span><span class="z-l-8 z-d-8">I.</span><span class="z-l-8 z-d-8"> \</span></span>
+<span class="giallo-l"><span class="z-l-2 z-d-2">  berner.cpp</span><span class="z-l-8 z-d-8"> \</span></span>
+<span class="giallo-l"><span class="z-l-2 z-d-2">  Networking/SimpleSocket.cpp</span><span class="z-l-8 z-d-8"> \</span></span>
+<span class="giallo-l"><span class="z-l-2 z-d-2">  Networking/BindingSocket.cpp</span><span class="z-l-8 z-d-8"> \</span></span>
+<span class="giallo-l"><span class="z-l-2 z-d-2">  Networking/ListeningSocket.cpp</span><span class="z-l-8 z-d-8"> \</span></span>
+<span class="giallo-l"><span class="z-l-8 z-d-8">  -</span><span class="z-l-8 z-d-8">o</span><span class="z-l-2 z-d-2"> server</span></span></code></pre>
+<p>Run the binary:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="shellscript"><span class="giallo-l"><span class="z-l-1 z-d-1">./server</span></span>
+<span class="giallo-l"><span class="z-l-6 z-l-i z-d-3 z-d-i">#</span><span class="z-l-6 z-l-i z-d-3 z-d-i"> Output: Server listening on port 8080...</span></span></code></pre>
+<p>Now fire up a terminal and test it with cURL:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="shellscript"><span class="giallo-l"><span class="z-l-1 z-d-1">curl</span><span class="z-l-8 z-d-8"> -</span><span class="z-l-8 z-d-8">i</span><span class="z-l-2 z-d-2"> http://localhost:8080</span></span></code></pre>
+<p>Response:</p>
+<pre class="giallo z-l-code z-d-code" ><code data-lang="http"><span class="giallo-l"><span class="z-l-5 z-d-5">HTTP</span><span>/</span><span class="z-l-9 z-d-9">1.1</span><span class="z-l-9 z-d-9"> 200</span><span class="z-l-2 z-d-2"> OK</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">Content-Type</span><span class="z-l-5 z-d-5">:</span><span class="z-l-2 z-d-2"> text/plain</span></span>
+<span class="giallo-l"><span class="z-l-1 z-d-1">Content-Length</span><span class="z-l-5 z-d-5">:</span><span class="z-l-2 z-d-2"> 2</span></span>
+<span class="giallo-l"></span>
+<span class="giallo-l"><span>Hi</span></span></code></pre>
+<p>It works! The browser and cURL parse our headers and body seamlessly because our byte stream strictly respects the RFC 2616 HTTP specification.</p>
+<hr />
+<h2 id="what-s-next-concurrency-epoll">What’s Next: Concurrency &amp; Epoll</h2>
+<p>This simple server uses a synchronous, blocking model—it handles one connection at a time before calling <code>accept()</code> again.</p>
+<p>In production servers (like Nginx), scalability is achieved by using non-blocking I/O multiplexing:</p>
+<ul>
+<li><strong><code>select</code> / <code>poll</code></strong>: Cross-platform but $O(N)$ scanning overhead.</li>
+<li><strong><code>epoll</code> on Linux</strong> or <strong><code>kqueue</code> on macOS / BSD</strong>: $O(1)$ event notifications triggered by ready file descriptors.</li>
+<li><strong>Thread Pools</strong>: Worker threads consuming client sockets from a thread-safe queue.</li>
+</ul>
+<p>Building this project demystified the magic of the web stack for me. Every framework you use is ultimately built on these exact primitives.</p>
+<p>Check out the full repository on GitHub: <a rel="external" href="https://github.com/garvittsingla/http-server-cpp">garvittsingla/http-server-cpp</a>.</p>
+
+</article><hr />
+	<nav id="post-nav"><a class="post-nav-item post-nav-prev" href="/blog/you-suck-at-subnetting/">
+				<div class="nav-arrow">Previous</div>
+				<span class="post-title">You suck at Subnetting</span>
+			</a><a class="post-nav-item post-nav-next" href="/blog/nslookup/">
+				<div class="nav-arrow">Next</div>
+				<span class="post-title">Implementing nslookup from scratch</span>
+			</a></nav>
+	</main>
+	<footer id="site-footer">
+		<nav>
+			<ul>
+					<li>
+						<a href="/">Portfolio</a>
+					</li>
+					<li>
+						<a href="/blog/">Blog</a>
+					</li>
+					<li>
+						<a href="https://github.com/garvittsingla" rel="" class="external">GitHub</a>
+					</li>
+					<li>
+						<a href="https://x.com/garvitsinglaa" rel="" class="external">X</a>
+					</li>
+			</ul>
+		</nav>
+</footer>
+
+	
+	<span id="copy-code-text" class="hidden">Copy Code</span>
+	<span id="search-index" class="hidden">/blog/search_index.en.json</span>
+	<span id="more-matches-text" class="hidden">$MATCHES more matches</span>
+
+	<style type="text/css">
+	:root {
+		--alert-note-text: "Note";
+		--alert-tip-text: "Tip";
+		--alert-important-text: "Important";
+		--alert-warning-text: "Warning";
+		--alert-caution-text: "Caution";
+	}
+</style>
+
+
+</body>
+</html>
