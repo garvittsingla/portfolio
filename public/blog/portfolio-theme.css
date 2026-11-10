@@ -10,7 +10,7 @@
   --fg-color: #09090b !important;
   --accent-color: #2563eb !important;
   --accent-color-alpha: rgba(37, 99, 235, 0.12) !important;
-  --dot-color: rgba(108, 143, 224, 0.38) !important;
+  --dot-color: rgba(108, 143, 224, 0.16) !important;
   --glass-bg: rgba(253, 251, 247, 0.88) !important;
   --card-bg: #faf6ea !important;
   --card-border: #e5decb !important;
@@ -32,7 +32,7 @@
     --fg-color: #fafafa !important;
     --accent-color: #60a5fa !important;
     --accent-color-alpha: rgba(96, 165, 250, 0.16) !important;
-    --dot-color: rgba(138, 175, 248, 0.22) !important;
+    --dot-color: rgba(255, 255, 255, 0.06) !important;
     --glass-bg: rgba(9, 10, 15, 0.88) !important;
     --card-bg: #121319 !important;
     --card-border: #27272a !important;
@@ -52,7 +52,7 @@
   --fg-color: #fafafa !important;
   --accent-color: #60a5fa !important;
   --accent-color-alpha: rgba(96, 165, 250, 0.16) !important;
-  --dot-color: rgba(138, 175, 248, 0.22) !important;
+  --dot-color: rgba(255, 255, 255, 0.06) !important;
   --glass-bg: rgba(9, 10, 15, 0.88) !important;
   --card-bg: #121319 !important;
   --card-border: #27272a !important;
@@ -69,7 +69,7 @@
 /* ── Notebook Dot Grid Paper Background ───────────────────────────────────── */
 body {
   background-color: var(--bg-color) !important;
-  background-image: radial-gradient(circle, var(--dot-color) 1.2px, transparent 1.2px) !important;
+  background-image: radial-gradient(circle, var(--dot-color) 1px, transparent 1px) !important;
   background-size: 24px 24px !important;
   background-position: 0 0 !important;
   color: var(--fg-color) !important;
