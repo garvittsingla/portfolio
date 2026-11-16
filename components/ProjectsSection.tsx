@@ -306,16 +306,16 @@ export function ProjectsSection() {
         {/* ════════════════════════════════════════════════════════════
             PROJECT 3: NSLOOKUP FROM SCRATCH
             ════════════════════════════════════════════════════════════ */}
-        <article className="group relative flex flex-col md:flex-row md:items-stretch overflow-hidden rounded-2xl sm:rounded-3xl border border-[#e7e1d0] bg-[#faf7ee]/95 p-4 sm:p-5 shadow-[0_8px_24px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_14px_36px_rgba(0,0,0,0.09)] dark:border-neutral-800/90 dark:bg-[#12131a]/95 dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)] md:col-span-2 gap-5 sm:gap-6">
+        <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl sm:rounded-3xl border border-[#e7e1d0] bg-[#faf7ee]/95 p-4 sm:p-5 shadow-[0_8px_24px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_14px_36px_rgba(0,0,0,0.09)] dark:border-neutral-800/90 dark:bg-[#12131a]/95 dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)]">
           {/* Washi tape accent on corner */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute right-4 top-0 h-4 w-16 -rotate-3 z-20 border-y border-sky-300/60 bg-sky-200/80 dark:border-sky-400/30 dark:bg-sky-300/25"
           />
 
-          {/* Left Side: Window Frame with Terminal GIF */}
-          <div className="w-full md:w-[48%] flex-shrink-0 flex flex-col justify-center">
-            <div className="relative overflow-hidden rounded-xl border border-neutral-300/80 dark:border-neutral-700/80 bg-neutral-950 shadow-sm">
+          <div>
+            {/* Window Frame with Terminal GIF */}
+            <div className="relative mb-4 overflow-hidden rounded-xl border border-neutral-300/80 dark:border-neutral-700/80 bg-neutral-950 shadow-sm">
               {/* Window Header */}
               <div className="flex items-center justify-between px-3 py-2 bg-neutral-900/95 border-b border-neutral-800">
                 <div className="flex items-center gap-1.5">
@@ -338,78 +338,162 @@ export function ProjectsSection() {
                 />
               </div>
             </div>
-          </div>
 
-          {/* Right Side: Content Details & Actions */}
-          <div className="flex flex-col justify-between flex-1">
-            <div>
-              {/* File No + Rubber Stamp */}
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <span className="font-handwriting text-xs text-neutral-500 dark:text-neutral-400">
-                  № 003 · systems programming · networking
-                </span>
-                <span className="inline-block px-2 py-0.5 rounded-[3px] border border-neutral-400/80 dark:border-neutral-600 bg-white/70 dark:bg-black/40 font-mono text-[9px] font-bold tracking-wider text-neutral-700 dark:text-neutral-300 rotate-[-1.5deg] shadow-2xs">
-                  [SYSTEMS / C]
-                </span>
-              </div>
-
-              {/* Title & Subtitle */}
-              <h3 className="font-semibold text-lg sm:text-xl text-neutral-900 dark:text-neutral-100 tracking-tight group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
-                nslookup in C
-              </h3>
-              <p className="mt-0.5 font-handwriting text-xs text-neutral-500 dark:text-neutral-400">
-                Custom DNS Resolver using UNIX Sockets API
-              </p>
-
-              {/* Description */}
-              <p className="mt-2.5 text-xs sm:text-[13px] leading-relaxed text-neutral-600 dark:text-neutral-300">
-                A command-line DNS resolver written from scratch in C to demystify computer networking and raw socket communication. Crafts 512-byte RFC 1035 wire datagrams, connects to UDP port 53, parses 12-byte header bitfields, and unpacks recursive A/AAAA records.
-              </p>
-
-              {/* Tags */}
-              <div className="mt-3.5 flex flex-wrap gap-1.5">
-                {["C", "POSIX Sockets", "UDP", "DNS Wire Protocol", "RFC 1035"].map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-md border border-neutral-300/70 dark:border-neutral-700 bg-white/50 dark:bg-neutral-900/50 px-2 py-0.5 font-mono text-[10px] text-neutral-600 dark:text-neutral-400"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+            {/* File No + Rubber Stamp */}
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="font-handwriting text-xs text-neutral-500 dark:text-neutral-400">
+                № 003 · systems programming · networking
+              </span>
+              <span className="inline-block px-2 py-0.5 rounded-[3px] border border-neutral-400/80 dark:border-neutral-600 bg-white/70 dark:bg-black/40 font-mono text-[9px] font-bold tracking-wider text-neutral-700 dark:text-neutral-300 rotate-[-1.5deg] shadow-2xs">
+                [SYSTEMS / C]
+              </span>
             </div>
 
-            {/* Action Links */}
-            <div className="mt-5 pt-3 border-t border-dashed border-neutral-300/80 dark:border-neutral-800 flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <a
-                  href="/blog/nslookup/"
-                  className="inline-flex items-center gap-1 font-mono text-xs font-semibold text-sky-600 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300 transition-colors"
-                >
-                  <span>read blog</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </a>
-                <a
-                  href="https://github.com/garvittsingla/nslookup"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 font-mono text-xs font-semibold text-neutral-600 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-white transition-colors"
-                >
-                  <span>readme & docs</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </a>
-              </div>
+            {/* Title & Subtitle */}
+            <h3 className="font-semibold text-lg sm:text-xl text-neutral-900 dark:text-neutral-100 tracking-tight group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">
+              nslookup in C
+            </h3>
+            <p className="mt-0.5 font-handwriting text-xs text-neutral-500 dark:text-neutral-400">
+              Custom DNS Resolver using UNIX Sockets API
+            </p>
 
+            {/* Description */}
+            <p className="mt-2.5 text-xs sm:text-[13px] leading-relaxed text-neutral-600 dark:text-neutral-300">
+              A command-line DNS resolver written from scratch in C to demystify computer networking and raw socket communication. Crafts 512-byte RFC 1035 wire datagrams, connects to UDP port 53, parses 12-byte header bitfields, and unpacks recursive A/AAAA records.
+            </p>
+
+            {/* Tags */}
+            <div className="mt-3.5 flex flex-wrap gap-1.5">
+              {["C", "POSIX Sockets", "UDP", "DNS Wire Protocol", "RFC 1035"].map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-md border border-neutral-300/70 dark:border-neutral-700 bg-white/50 dark:bg-neutral-900/50 px-2 py-0.5 font-mono text-[10px] text-neutral-600 dark:text-neutral-400"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Links */}
+          <div className="mt-5 pt-3 border-t border-dashed border-neutral-300/80 dark:border-neutral-800 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <a
+                href="/blog/nslookup/"
+                className="inline-flex items-center gap-1 font-mono text-xs font-semibold text-sky-600 hover:text-sky-800 dark:text-sky-400 dark:hover:text-sky-300 transition-colors"
+              >
+                <span>read blog</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
               <a
                 href="https://github.com/garvittsingla/nslookup"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 font-mono text-xs text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
+                className="inline-flex items-center gap-1 font-mono text-xs font-semibold text-neutral-600 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-white transition-colors"
               >
-                <Code2 className="w-3.5 h-3.5" />
-                <span>github</span>
+                <span>readme & docs</span>
+                <ArrowUpRight className="w-3 h-3" />
               </a>
             </div>
+
+            <a
+              href="https://github.com/garvittsingla/nslookup"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-mono text-xs text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
+            >
+              <Code2 className="w-3.5 h-3.5" />
+              <span>github</span>
+            </a>
+          </div>
+        </article>
+
+        {/* ════════════════════════════════════════════════════════════
+            PROJECT 4: CCP (CAMPUS CAPTIVE PORTAL) ⚡
+            ════════════════════════════════════════════════════════════ */}
+        <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl sm:rounded-3xl border border-[#e7e1d0] bg-[#faf7ee]/95 p-4 sm:p-5 shadow-[0_8px_24px_rgba(0,0,0,0.05)] transition-all duration-300 hover:shadow-[0_14px_36px_rgba(0,0,0,0.09)] dark:border-neutral-800/90 dark:bg-[#12131a]/95 dark:shadow-[0_12px_32px_rgba(0,0,0,0.35)]">
+          {/* Washi tape accent on corner */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute right-4 top-0 h-4 w-16 -rotate-3 z-20 border-y border-emerald-300/60 bg-emerald-200/80 dark:border-emerald-400/30 dark:bg-emerald-300/25"
+          />
+
+          <div>
+            {/* Window Frame with Video Demo */}
+            <ProjectVideoWindow
+              src="/projects/ccp-demo.mp4"
+              poster="/projects/ccp-cover.jpg"
+              urlLabel="github.com/garvittsingla/ccp"
+            />
+
+            {/* File No + Rubber Stamp */}
+            <div className="flex items-center justify-between gap-2 mb-2">
+              <span className="font-handwriting text-xs text-neutral-500 dark:text-neutral-400">
+                № 004 · cli tool · campus networking
+              </span>
+              <span className="inline-block px-2 py-0.5 rounded-[3px] border border-neutral-400/80 dark:border-neutral-600 bg-white/70 dark:bg-black/40 font-mono text-[9px] font-bold tracking-wider text-neutral-700 dark:text-neutral-300 rotate-[-1.5deg] shadow-2xs">
+                [CLI / RUST]
+              </span>
+            </div>
+
+            {/* Title & Subtitle */}
+            <h3 className="font-semibold text-lg sm:text-xl text-neutral-900 dark:text-neutral-100 tracking-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+              ccp ⚡
+            </h3>
+            <p className="mt-0.5 font-handwriting text-xs text-neutral-500 dark:text-neutral-400">
+              Campus Captive Portal Terminal Authenticator
+            </p>
+
+            {/* Description */}
+            <p className="mt-2.5 text-xs sm:text-[13px] leading-relaxed text-neutral-600 dark:text-neutral-300">
+              Lightweight CLI tool written in Rust to automatically authenticate and connect to Chitkara’s Campus Captive Portal (CCP) instantly from the terminal. Eliminates OS browser detection lag and repetitive credential inputs with single-command connection.
+            </p>
+
+            {/* Tags */}
+            <div className="mt-3.5 flex flex-wrap gap-1.5">
+              {["Rust", "CLI Tool", "Networking", "Open Source", "Automation"].map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-md border border-neutral-300/70 dark:border-neutral-700 bg-white/50 dark:bg-neutral-900/50 px-2 py-0.5 font-mono text-[10px] text-neutral-600 dark:text-neutral-400"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Action Links */}
+          <div className="mt-5 pt-3 border-t border-dashed border-neutral-300/80 dark:border-neutral-800 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <a
+                href="https://lnkd.in/p/gEJipqsY"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-mono text-xs font-semibold text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors"
+              >
+                <span>post & video</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+              <a
+                href="https://github.com/garvittsingla/ccp#installation"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-mono text-xs font-semibold text-neutral-600 hover:text-neutral-950 dark:text-neutral-400 dark:hover:text-white transition-colors"
+              >
+                <span>install script</span>
+                <ArrowUpRight className="w-3 h-3" />
+              </a>
+            </div>
+
+            <a
+              href="https://github.com/garvittsingla/ccp"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 font-mono text-xs text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
+            >
+              <Code2 className="w-3.5 h-3.5" />
+              <span>github</span>
+            </a>
           </div>
         </article>
       </div>
